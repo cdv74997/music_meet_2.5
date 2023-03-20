@@ -141,14 +141,14 @@ def groupEvents(request):
 
 def home(request):
     
-    groups, musicians, events, topics, event_count, event_messages, message_dict, q, now = searchEvents(request)
+    events, topics, event_count, event_messages, message_dict, q, now = searchEvents(request)
     custom_range, events, paginator = paginateEvents(request, events, 2)
     eventsearching = "yes"
     
-    logging.warning('hello')
+    
     
     # Create an object containing the groups object, musicians object, etc.:
-    context = {'groups': groups, 'musicians': musicians, 'events': events, 'topics': topics,
+    context = {'events': events, 'topics': topics,
      'event_count': event_count, 'event_messages': event_messages, 'message_dict': message_dict,
      'q': q, 'paginator': paginator, 'custom_range': custom_range, 'eventsearching': eventsearching, 'now': now}
 
@@ -295,8 +295,6 @@ def createMusician(request):
        # musician.user = request.user
         Musician.objects.create(
             user=request.user,
-            instruments=request.POST.get('instruments'),
-            genres=request.POST.get('genres'),
             experience=request.POST.get('experience'),
             location=request.POST.get('location'),
             demo=request.POST.get('demo')
@@ -482,4 +480,3 @@ def topicsPage(request):
 def activityPage(request):
     event_messages = Message.objects.all()
     return render(request, 'base/activity.html', {'event_messages' : event_messages})
-

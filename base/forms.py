@@ -42,5 +42,4 @@ class MusicianForm(ModelForm):
     class Meta:
         model = Musician
         fields = '__all__'
-        exclude = ['user']
-
+        exclude = ['user', 'genres', 'instruments']

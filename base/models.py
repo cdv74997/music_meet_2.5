@@ -30,9 +30,11 @@ class User(AbstractUser):
 
 class Topic(models.Model):
     name = models.CharField(max_length=200)
-
+    
     def __str__(self):
-        return self.name
+        return str(self.name)
+
+
 
 
 class Event(models.Model):
@@ -84,6 +86,14 @@ experience_choices = (
     ('Eight Or More Years','8+'),
 )
 
+class Skill(models.Model):
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    name = models.CharField(max_length=200, null=True, blank=True)
+    id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False)
+
+    def __str__(self):
+        return str(self.name)
+
 class Musician(models.Model):
     # username, primary key, charfield,  max length of 60
     #uname = models.CharField(max_length = 60, primary_key = True) #fk???
@@ -92,7 +102,7 @@ class Musician(models.Model):
     instruments = models.CharField(max_length = 200)
 
     # genres, charfield, max length of 200
-    genres = models.CharField(max_length = 200)
+    genres = models.ManyToManyField(Skill, null=True, blank=True)
 
     # experience, floatfield, no max length?
     experience = models.CharField(default='One Year',max_length = 19, choices = experience_choices)
@@ -149,5 +159,4 @@ class InboxMessage(models.Model):
     is_read = models.BooleanField(default=False, null=True)
     created = models.DateTimeField(auto_now_add=True)
     id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False)
-
 
