@@ -26,9 +26,36 @@
   /* color: inherit; */
   font-size: inherit;
 }
+.header > .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
 html {
   font-size: 56.25%;
+}
+
+.header__menuItem > a {
+  color: var(--color-light);
+  font-weight: 300;
+}
+
+.header__menuItem a {
+  transition: all 0.5s ease-in-out;
+  padding: 1rem 3rem;
+}
+
+.header__nav input[type='checkbox']:checked ~ .header__menu {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.header__nav > ul {
+  display: inline-flex;
+  align-items: center;
+  list-style: none;
+  gap: 6.5rem;
 }
 
 @media only screen and (min-width: 1200px) {
@@ -266,14 +293,16 @@ a {
 ================================*/
 
 .header {
-  padding: 1.5rem;
+  position: sticky;
+  z-index: 111;
+  padding: 1.5rem 0;
   background-color: var(--color-dark);
 }
 
-.header > .container {
+/*.header > .container {
   display: flex;
   gap: 9.5rem;
-}
+}*/
 
 .header__logo,
 .header__user {

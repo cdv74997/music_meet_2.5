@@ -87,7 +87,15 @@ experience_choices = (
 )
 
 class Skill(models.Model):
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    owner = models.ManyToManyField(User)
+    name = models.CharField(max_length=200, null=True, blank=True)
+    id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False)
+
+    def __str__(self):
+        return str(self.name)
+
+class InstrumentSkill(models.Model):
+    owner = models.ManyToManyField(User)
     name = models.CharField(max_length=200, null=True, blank=True)
     id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False)
 
@@ -99,10 +107,14 @@ class Musician(models.Model):
     #uname = models.CharField(max_length = 60, primary_key = True) #fk???
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
     # instruments, charfield, max length of 200
-    instruments = models.CharField(max_length = 200)
+    primaryinstrument = models.CharField(max_length = 200, null=True, blank=True)
+
+    primarygenre = models.CharField(max_length = 200, null=True, blank=True)
+
+    instruments = models.ManyToManyField(InstrumentSkill, blank=True)
 
     # genres, charfield, max length of 200
-    genres = models.ManyToManyField(Skill, null=True, blank=True)
+    genres = models.ManyToManyField(Skill, blank=True)
 
     # experience, floatfield, no max length?
     experience = models.CharField(default='One Year',max_length = 19, choices = experience_choices)

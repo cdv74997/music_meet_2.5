@@ -1,60 +1,26 @@
 {% load static %}
 <header class="header header--loggedIn">
-    <div class="container">
+    <div class="container container--narrow">
       <a href="{% url 'home' %}" class="header__logo">
         <img src="{% static 'images/MusicMeet.png' %}" />
         <h1>MusicMeet</h1>
       </a>
-      {% if eventsearching %}
-      <form class="header__search" method="GET" action="{% url 'home' %}">
-        <label>
-          <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
-            <title>search</title>
-            <path
-              d="M32 30.586l-10.845-10.845c1.771-2.092 2.845-4.791 2.845-7.741 0-6.617-5.383-12-12-12s-12 5.383-12 12c0 6.617 5.383 12 12 12 2.949 0 5.649-1.074 7.741-2.845l10.845 10.845 1.414-1.414zM12 22c-5.514 0-10-4.486-10-10s4.486-10 10-10c5.514 0 10 4.486 10 10s-4.486 10-10 10z"
-            ></path>
-          </svg>
-          
-          <input name="q" placeholder="Search for events..." />
-          
-          
-        </label>
-      </form>
-      {% endif %}
-      {% if groupsearching %}
-      <form class="header__search" method="GET" action="{% url 'search-group' %}">
-        <label>
-          <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
-            <title>search</title>
-            <path
-              d="M32 30.586l-10.845-10.845c1.771-2.092 2.845-4.791 2.845-7.741 0-6.617-5.383-12-12-12s-12 5.383-12 12c0 6.617 5.383 12 12 12 2.949 0 5.649-1.074 7.741-2.845l10.845 10.845 1.414-1.414zM12 22c-5.514 0-10-4.486-10-10s4.486-10 10-10c5.514 0 10 4.486 10 10s-4.486 10-10 10z"
-            ></path>
-          </svg>
-          
-          <input name="q" placeholder="Search for groups..." />
-          
-          
-        </label>
-      </form>
-      {% endif %}
-      {% if musiciansearching %}
-      <form class="header__search" method="GET" action="{% url 'search-group' %}">
-        <label>
-          <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
-            <title>search</title>
-            <path
-              d="M32 30.586l-10.845-10.845c1.771-2.092 2.845-4.791 2.845-7.741 0-6.617-5.383-12-12-12s-12 5.383-12 12c0 6.617 5.383 12 12 12 2.949 0 5.649-1.074 7.741-2.845l10.845 10.845 1.414-1.414zM12 22c-5.514 0-10-4.486-10-10s4.486-10 10-10c5.514 0 10 4.486 10 10s-4.486 10-10 10z"
-            ></path>
-          </svg>
-          
-          <input name="q" placeholder="Search for musicians..." />
-          
-          
-        </label>
-      </form>
-      {% endif %}
+     
       <!--<a href="{% url 'search-musicians' %}">Search Musicians</a>-->
       <nav class="header__menu">
+        <ul class="header__menu">
+            <li class="header__menuItem"><a href="{% url 'home' %}">Events</a></li>
+            <li class="header__menuItem"><a href="{% url 'search-group' %}">Groups</a></li>
+            <li class="header__menuItem"><a href="{% url 'search-musicians' %}">Musicians</a></li>
+            {% if request.user.is_authenticated %}
+            <li class="header__menuItem"><a href="{% url 'inbox' %}">Inbox</a></li>
+            <li class="header__menuItem"><a href="{% url 'account' %}">Account</a></li>
+            <li class="header__menuItem"><a href="{% url 'logout' %}" class="btn btn--sub">Logout</a></li>
+            {% else %}
+            <li class="header__menuItem"><a href="{% url 'login' %}" class="btn btn--sub">Login/Sign Up</a></li>
+            {% endif %}
+       
+        </ul>
         <!-- Not Logged In -->
         <!-- <a href="/login.html">
           <img src="./assets/avatar.svg" />
@@ -62,32 +28,7 @@
         </a> -->
 
         <!-- Logged In -->
-        {% if request.user.is_authenticated %}
-        <div class="header__user">
-          <a href="{% url 'user-profile' pk=user.id %}"> 
-            <div class="avatar avatar--medium active">
-              <img src="{{request.user.avatar.url}}" />
-            </div>
-            <p>{{request.user.username}} <span>@{{request.user.username}}</span></p>
-          </a>
-          <button class="dropdown-button">
-            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
-              <title>chevron-down</title>
-              <path d="M16 21l-13-13h-3l16 16 16-16h-3l-13 13z"></path>
-            </svg>
-          </button>
-          <a href="{% url 'logout' %}">
-            Sign Out
-          </a>
-        </div>
-        {% else %}
-        <!-- Not Logged In -->
-         <a href="{% url 'login' %}">
-          <img src="{% static 'images/avatar.svg' %}" />
-          <p>Log in or sign up</p>
-        </a> 
-
-        {% endif %}
+        
 
         <div class="dropdown-menu">
           <a href="{% url 'update-user' %}" class="dropdown-link"
@@ -115,17 +56,3 @@
       </nav>
     </div>
   </header>
-
-
-
-
-<!--{% if request.user.is_authenticated %}
-<p>Hello {{request.user}}</p>
-<a href="{% url 'logout' %}">Logout</a>
-{% else %}
-
-<a href="{% url 'login' %}">Login</a>
-
-{% endif %}-->
- 
-

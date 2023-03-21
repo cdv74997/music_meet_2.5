@@ -43,3 +43,4 @@ class MusicianForm(ModelForm):
         model = Musician
         fields = '__all__'
         exclude = ['user', 'genres', 'instruments']
+        labels = {'instruments': 'primary instrument'}

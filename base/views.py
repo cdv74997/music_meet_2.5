@@ -163,7 +163,7 @@ def searchMusician(request):
         #User__matches=User.objects.get(last_name__icontains=q) |
         #Q(User__matches=User.objects.get(first_name__icontains=q)) |
         #Q(User__matches=User.objects.get(last_name__icontains=q)) |
-        Q(instruments__icontains=q) |
+        Q(primaryinstrument__icontains=q) |
         Q(genres__icontains=q) |
         Q(location__icontains=q)
     )
@@ -295,6 +295,8 @@ def createMusician(request):
        # musician.user = request.user
         Musician.objects.create(
             user=request.user,
+            primaryinstrument=request.POST.get('primaryinstrument'),
+            primarygenre=request.POST.get('primarygenre'),
             experience=request.POST.get('experience'),
             location=request.POST.get('location'),
             demo=request.POST.get('demo')
@@ -324,7 +326,7 @@ def updateMusician(request, pk):
 
     if request.method == 'POST':
         
-        musician.instruments = request.POST.get('instruments')
+        musician.primaryinstrument = request.POST.get('primaryinstrument')
         musician.genres = request.POST.get('genres')
         musician.experience = request.POST.get('experience')
         musician.location = request.POST.get('location')
@@ -480,3 +482,19 @@ def topicsPage(request):
 def activityPage(request):
     event_messages = Message.objects.all()
     return render(request, 'base/activity.html', {'event_messages' : event_messages})
+
+@login_required(login_url='login')
+def userAccount(request):
+    user = request.user
+    skills = user.skill_set.all()
+    instruments = user.instrumentskill_set.all()
+
+    context = {'user': user, 'skills': skills, 'instruments': instruments}
+
+@login_required(login_url='login')
+def inbox(request):
+    user = request.user
+    messageRequests = user.inboxmessages.all()
+    unreadCount = messageRequests.filter(is_read=False).count()
+    context = {'messageRequests': messageRequests, 'unreadCount': unreadCount}
+    return render(request, 'base/inbox.html', context)

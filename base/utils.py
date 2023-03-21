@@ -53,24 +53,31 @@ def searchEvents(request):
     try:
         email = request.user.email
         musician = request.user.musician
-        genres = request.user.skill_set.filter(owner__email=email) # your problem is HERE
-        instruments = musician.instruments
+        primarygenre = musician.primarygenre
+        genres = request.user.skill_set.all()
+        #instruments = request.user.instrumentskill_set.all()
+        #genres = request.user.skill_set.filter(owner__email=email) # your problem is HERE
+        #instruments = request.user.skill_set.filter(owner__email=email)
+        primaryinstrument = musician.primaryinstrument
         musicianZip = musician.location
         maxDistance = 50 
         
         # Retrieve all events that match the current user's genre and preferred instruments:
         #genrenames = genres.name if genres.name is not None else ''
-        #logging.warning('hello')
+        logging.warning('hello')
         events = Event.objects.filter(
             (
-            Q(description__icontains=instruments) |
-            Q(instruments_needed__icontains=instruments)) & 
+            Q(topic__name__icontains=primarygenre) | 
+            Q(description__icontains=primaryinstrument) |
+            Q(instruments_needed__icontains=primaryinstrument)) & 
             Q(occurring__gte=datetime.date.today())
          )
         if genres:
             for genre in genres.iterator():
-               events |= Event.objects.filter(Q(topic__name__icontains=genre))
-               
+               events |= Event.objects.filter(Q(topic__name__icontains=genre) & Q(occurring_gte=datetime.date.today()))
+        #if instruments != "":
+            #for instrument in instruments.iterator():
+                #events |= Event.objects.filter((Q(description__icontains=instrument) | Q(instruments_needed__icontains=instrument)) & Q(occurring__gte=datetime.date.today()))
         
       
 
@@ -88,7 +95,7 @@ def searchEvents(request):
 
 
         # Retrieve all messages for the above events:
-        event_messages = Message.objects.filter(Q(event__topic__name__icontains=instruments))
+        event_messages = Message.objects.filter(Q(event__topic__name__icontains=primaryinstrument))
 
         # HttpRequest.GET = method (GET or POST). A dictionary-like object containing all given HTTP GET parameters. Returns QueryDict.
         # QueryDict.get(key) = returns value given key.
@@ -152,7 +159,7 @@ def searchEvents(request):
         event_messages = Message.objects.filter(Q(event__topic__name__icontains=q))
         now = datetime.date.today()
         musicians = Musician.objects.filter(
-            Q(instruments__icontains=q) |
+            Q(primaryinstrument__icontains=q) |
             #Q(genres__icontains=q) |
             Q(location__icontains=q)
         )
