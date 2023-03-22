@@ -59,22 +59,31 @@ def searchEvents(request):
         #genres = request.user.skill_set.filter(owner__email=email) # your problem is HERE
         #instruments = request.user.skill_set.filter(owner__email=email)
         primaryinstrument = musician.primaryinstrument
+        instruments = request.user.instrumentskill_set.all()
         musicianZip = musician.location
         maxDistance = 50 
         
         # Retrieve all events that match the current user's genre and preferred instruments:
         #genrenames = genres.name if genres.name is not None else ''
-        logging.warning('hello')
+        
         events = Event.objects.filter(
-            (
-            Q(topic__name__icontains=primarygenre) | 
+            (Q(topic__name__icontains=primarygenre) |
             Q(description__icontains=primaryinstrument) |
-            Q(instruments_needed__icontains=primaryinstrument)) & 
+            Q(instruments_needed__icontains=primaryinstrument)) &
             Q(occurring__gte=datetime.date.today())
          )
         if genres:
             for genre in genres.iterator():
-               events |= Event.objects.filter(Q(topic__name__icontains=genre) & Q(occurring_gte=datetime.date.today()))
+               events |= Event.objects.filter(Q(topic__name__icontains=genre) & Q(occurring__gte=datetime.date.today()))
+               
+
+        if instruments:
+            for instrument in instruments.iterator():
+                events |= Event.objects.filter(
+                    (Q(description__icontains=instrument) |
+                    Q(instruments_needed__icontains=instrument)) &
+                    Q(occurring__gte=datetime.date.today())
+                )
         #if instruments != "":
             #for instrument in instruments.iterator():
                 #events |= Event.objects.filter((Q(description__icontains=instrument) | Q(instruments_needed__icontains=instrument)) & Q(occurring__gte=datetime.date.today()))

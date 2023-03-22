@@ -7,8 +7,8 @@ from django.db.models import Q
 from django.contrib.auth import authenticate, login, logout
 from .utils import searchEvents, paginateEvents
 #from django.contrib.auth.forms import UserCreationForm
-from .models import Event, Topic, Message, Musician, Group, User
-from .forms import EventForm, UserForm, MusicianForm, GroupForm, MyUserCreationForm
+from .models import Event, Topic, Message, Musician, Group, User, Skill, InstrumentSkill
+from .forms import EventForm, UserForm, MusicianForm, GroupForm, MyUserCreationForm, GenresForm, InstrumentsForm
 from django.core.exceptions import ObjectDoesNotExist
 import logging
 import datetime
@@ -291,16 +291,28 @@ def createMusician(request):
 
     if request.method == 'POST':
         form = MusicianForm(request.POST)
+        firstInstrument=request.POST.get('primaryinstrument')
+        firstGenre=request.POST.get('primarygenre')
         #musician = form.save(commit=False)
        # musician.user = request.user
         Musician.objects.create(
             user=request.user,
-            primaryinstrument=request.POST.get('primaryinstrument'),
-            primarygenre=request.POST.get('primarygenre'),
+            primaryinstrument=firstInstrument,
+            primarygenre=firstGenre,
             experience=request.POST.get('experience'),
             location=request.POST.get('location'),
             demo=request.POST.get('demo')
         )
+        Skill.objects.create(
+            owner=request.user,
+            name=firstGenre
+        )
+        InstrumentSkill.objects.create(
+            owner=request.user,
+            name=firstInstrument
+        )
+
+
         
         user = request.user
         
@@ -486,10 +498,11 @@ def activityPage(request):
 @login_required(login_url='login')
 def userAccount(request):
     user = request.user
-    skills = user.skill_set.all()
+    genres = user.skill_set.all()
     instruments = user.instrumentskill_set.all()
 
-    context = {'user': user, 'skills': skills, 'instruments': instruments}
+    context = {'user': user, 'genres': genres, 'instruments': instruments}
+    return render(request, 'base/account.html', context)
 
 @login_required(login_url='login')
 def inbox(request):
@@ -498,3 +511,38 @@ def inbox(request):
     unreadCount = messageRequests.filter(is_read=False).count()
     context = {'messageRequests': messageRequests, 'unreadCount': unreadCount}
     return render(request, 'base/inbox.html', context)
+
+@login_required(login_url='login')
+def addGenre(request):
+    user = request.user
+    form = GenresForm()
+
+    if request.method == "POST":
+        form = GenresForm(request.POST)
+        if form.is_valid():
+            genre = form.save(commit=False)
+            genre.owner = user
+            genre.save()
+            messages.success(request, 'Genre was added successfully!')
+            return redirect('account')
+    
+    context = {'form': form}
+    return render(request, 'base/genre_form.html', context)
+
+
+@login_required(login_url='login')
+def addInstrument(request):
+    user = request.user 
+    form = InstrumentsForm()
+
+    if request.method == "POST":
+        form = InstrumentsForm(request.POST)
+        if form.is_valid():
+            instrument = form.save(commit=False)
+            instrument.owner = user
+            instrument.save()
+            messages.success(request, 'Instrument was added successfully!')
+            return redirect('account')
+
+    context = {'form': form}
+    return render(request, 'base/instrument_form.html', context)

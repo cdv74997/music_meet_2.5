@@ -1,0 +1,133 @@
+{% extends 'main.html' %}
+
+{% block content %}
+  <main class="profile-page layout layout--3">
+    <div class="container">
+      <!-- Topics Start 
+      <div class="topics">
+        <div class="topics__header">
+          <h2>Browse Topics</h2>
+        </div>
+        <ul class="topics__list">
+          <li>
+            <a href="/" class="active">All <span>553</span></a>
+          </li>
+          <li>
+            <a href="/">Python <span>232</span></a>
+          </li>
+          <li>
+            <a href="/">JavaScript <span>122</span></a>
+          </li>
+          <li>
+            <a href="/">React <span>57</span></a>
+          </li>
+          <li>
+            <a href="/">Database <span>90</span></a>
+          </li>
+        </ul>
+        <button class="btn btn--link" href="/">
+          More
+          <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+            <title>chevron-down</title>
+            <path d="M16 21l-13-13h-3l16 16 16-16h-3l-13 13z"></path>
+          </svg>
+        </button>
+      </div>
+       Topics End (the include tag now replaces)-->
+       {% include 'base/topics_component.html' %}
+
+      <!-- Room List Start -->
+      <div class="roomList">
+        <div class="profile">
+          <div class="profile__avatar">
+            <div class="avatar avatar--large active">
+              <img src="{{request.user.avatar.url}}" />
+            </div>
+          </div>
+          <div class="profile__info">
+            {% if user.account_type == "G" %}
+            <h3>{{user.group.group_name}}</h3>
+            <h2>Genre: {{user.group.genre}}</h2>
+            
+            {% else %}
+            <h3>{{user.first_name}} {{user.last_name}}</h3>
+            {% endif %}
+            <p>@{{user.username}}</p>
+            {% if user.account_type == "G" %}
+            
+            <a class="btn btn--pill edit-user-button" href="{% url 'update-group' user.group.id %}">Edit Group Profile</a>
+            {% endif %}
+
+            {% if request.user == user %}
+            <a href="{% url 'update-user' %}" class="btn btn--main btn--pill">Edit User Profile</a>
+            {% endif %}
+            
+          </div>
+          <div class="profile__about">
+            <h3>About</h3>
+            <p>
+              {{user.bio}}
+            </p>
+          </div>
+          <!-- If the current user is a musician, display their musician info -->
+          {% if user.account_type == "M" %}
+          <div class="profile__about">
+            <h3>Instruments</h3>
+            <a class="tag tag--pill tag--sub settings__btn tag--lg" href="{% url 'add-instrument' %}"><i class="im im-plus"></i>Add Instrument</a>
+            {% if instruments %}
+            {% for instrument in instruments %}
+            <p>
+              {{instrument.name}}
+            </p>
+            {% endfor %}
+            {% endif %}
+          </div>
+
+          <div class="profile__about">
+            <h3>Genres</h3>
+            <a class="tag tag--pill tag--sub settings__btn tag--lg" href="{% url 'add-genre' %}"><i class="im im-plus"></i>Add Genre</a>
+            {% if genres %}
+            {% for genre in genres %}
+            <p>
+              {{genre.name}}
+            </p>
+            {% endfor %}
+            {% endif %}
+          </div>
+
+          <div class="profile__about">
+            <h3>Years of Experience</h3>
+            <p>
+              {{user.musician.experience}}
+            </p>
+          </div>
+
+          <div class="profile__about">
+            <h3>Location</h3>
+            <p>
+              {{user.musician.location}}
+            </p>
+          </div>
+
+          <div class="profile__about">
+            <h3>Link to Demo</h3>
+            <p>
+              {{user.musician.demo}}
+            </p>
+          </div>
+          {% endif %}
+        </div>
+
+        <div class="profile__about">
+          <h3>Events</h3>
+          {% include 'base/feed_component.html' %}
+        </div>
+      </div>
+      <!-- Room List End -->
+
+      <!-- Activities Start -->
+      {% include 'base/activity_component.html' %}
+      <!-- Activities End -->
+    </div>
+  </main>
+{% endblock content %}

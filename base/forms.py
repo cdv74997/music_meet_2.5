@@ -1,7 +1,7 @@
 from django.forms import ModelForm
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from .models import Event, Group, Musician, User
+from .models import Event, Group, Musician, User, Skill, InstrumentSkill
 #from django.contrib.auth.models import User
 from django.contrib.admin.widgets import  AdminDateWidget, AdminTimeWidget, AdminSplitDateTime
 
@@ -44,3 +44,28 @@ class MusicianForm(ModelForm):
         fields = '__all__'
         exclude = ['user', 'genres', 'instruments']
         labels = {'instruments': 'primary instrument'}
+
+class GenresForm(ModelForm):
+    class Meta:
+        model = Skill
+        fields = '__all__'
+        exclude = ['owner']
+
+    def __init__(self, *args, **kwargs):
+        super(GenresForm, self).__init__(*args, **kwargs)
+
+        for name, field in self.fields.items():
+            field.widget.attrs.update({'class': 'input'})
+
+    
+class InstrumentsForm(ModelForm):
+    class Meta:
+        model = InstrumentSkill
+        fields = '__all__'
+        exclude = ['owner']
+
+    def __init__(self, *args, **kwargs):
+        super(InstrumentsForm, self).__init__(*args, **kwargs)
+
+        for name, field in self.fields.items():
+            field.widget.attrs.update({'class': 'input'})

@@ -27,5 +27,7 @@ urlpatterns = [
     path('group-event/', views.groupEvents, name='group-event'),
     path('search-group/', views.searchGroup, name='search-group'),
     path('account/', views.userAccount, name="account"), 
-    path('inbox/', views.inbox, name="inbox")
+    path('inbox/', views.inbox, name="inbox"),
+    path('add-genre', views.addGenre, name="add-genre"),
+    path('add-instrument', views.addInstrument, name="add-instrument")
 ]
