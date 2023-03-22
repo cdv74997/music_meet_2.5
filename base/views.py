@@ -529,6 +529,34 @@ def addGenre(request):
     context = {'form': form}
     return render(request, 'base/genre_form.html', context)
 
+@login_required(login_url='login')
+def updateGenre(request, pk):
+    user = request.user
+    genre = user.skill_set.get(id=pk)
+    form = GenresForm(instance=genre)
+
+    if request.method == "POST":
+        form = GenresForm(request.POST, instance=genre)
+        if form.is_valid():
+            
+            form.save()
+            messages.success(request, 'Genre was revised successfully')
+            return redirect('account')
+
+    context = {'form': form}
+    return render(request, 'base/skill_form.html', context)
+
+@login_required(login_url='login')
+def deleteGenre(request, pk):
+    user = request.user
+    genre = user.skill_set.get(id=pk)
+    if request.method == "POST":
+        genre.delete()
+        messages.success(request, "Genre was successfully deleted!")
+        return redirect('account')
+    context = {'object': genre}
+    return render(request, 'delete_template.html', context)
+
 
 @login_required(login_url='login')
 def addInstrument(request):
@@ -546,3 +574,32 @@ def addInstrument(request):
 
     context = {'form': form}
     return render(request, 'base/instrument_form.html', context)
+
+@login_required(login_url='login')
+def updateInstrument(request, pk):
+    user = request.user
+    instrument = user.instrumentskill_set.get(id=pk)
+    form = InstrumentsForm(instance=instrument)
+
+    if request.method == "POST":
+        form = InstrumentsForm(request.POST, instance=instrument)
+        if form.is_valid():
+
+            form.save()
+            messages.success(request, 'Instrument was revised successfully!')
+            return redirect('account')
+
+    context = {'form': form}
+    return render(request, 'users/instrument_form.html', context)
+
+@login_required(login_url='login')
+def deleteInstrument(request, pk):
+    user = request.user
+    instrument = user.instrumentskill_set.get(id=pk)
+    if request.method == "POST":
+        instrument.delete()
+        messages.success(request, "Instrument was successfully deleted!")
+        return redirect('account')
+    context = {'object': instrument}
+    return render(request, 'delete_template.html', context)
+    

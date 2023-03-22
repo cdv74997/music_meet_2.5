@@ -74,14 +74,23 @@
           <div class="profile__about">
             <h3>Instruments</h3>
             <a class="tag tag--pill tag--sub settings__btn tag--lg" href="{% url 'add-instrument' %}"><i class="im im-plus"></i>Add Instrument</a>
-            {% if instruments %}
-            {% for instrument in instruments %}
-            <p>
-              {{instrument.name}}
-            </p>
-            {% endfor %}
-            {% endif %}
-          </div>
+            <table class="settings__table">
+                {% for instrument in instruments %}
+                <tr>
+                  <td class="settings__tableInfo">
+                    <h4>{{instrument.name}}</h4>
+                    
+                  </td>
+                  <td class="settings__tableActions">
+                    <a class="tag tag--pill tag--main settings__btn" href="{% url 'update-instrument' instrument.id %}"><i class="im im-edit"></i> Edit</a>
+                    <a class="tag tag--pill tag--main settings__btn" href="{% url 'delete-instrument' instrument.id %}?next=/account"><i class="im im-x-mark-circle-o"></i>
+                      Delete</a>
+                  </td>
+                </tr>
+                {% endfor %}
+                
+              </table>
+            
 
           <div class="profile__about">
             <h3>Genres</h3>
