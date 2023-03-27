@@ -8,7 +8,7 @@ from django.contrib.auth import authenticate, login, logout
 from .utils import searchEvents, paginateEvents
 #from django.contrib.auth.forms import UserCreationForm
 from .models import Event, Topic, Message, Musician, Group, User
-from .forms import EventForm, UserForm, MusicianForm, GroupForm, MyUserCreationForm, GenresForm, InstrumentsForm
+from .forms import EventForm, UserForm, MusicianForm, GroupForm, MyUserCreationForm, GenresForm, InstrumentsForm, InboxMessageForm
 from django.core.exceptions import ObjectDoesNotExist
 import logging
 import datetime
@@ -164,7 +164,7 @@ def searchMusician(request):
         #Q(User__matches=User.objects.get(first_name__icontains=q)) |
         #Q(User__matches=User.objects.get(last_name__icontains=q)) |
         Q(primaryinstrument__icontains=q) |
-        Q(genres__icontains=q) |
+        Q(primarygenre__icontains=q) |
         Q(location__icontains=q)
     )
     users = User.objects.filter(
@@ -179,9 +179,11 @@ def searchMusician(request):
         musicians |= userMusicians
     
     eventsearching = ""
+    groupsearching = ""
+    musiciansearching = "yes"
 
     topics = Topic.objects.all()[0:5]
-    context = {'musicians': musicians, 'topics': topics, 'eventsearching': eventsearching}
+    context = {'musicians': musicians, 'topics': topics, 'eventsearching': eventsearching, 'groupsearching': groupsearching, 'musiciansearching': musiciansearching}
     return render(request, 'base/home.html', context)
 
 def searchGroup(request):
@@ -247,9 +249,10 @@ def userProfile(request, pk):
     events = user.event_set.all()
     event_messages = user.message_set.all()
     topics = Topic.objects.all()
+    message_dict = {}
     if user.account_type=="M":
         musician = Musician.objects.get(user_id=pk)
-    context = {'user': user, 'events': events, 'event_messages': event_messages, 'topics': topics}
+    context = {'user': user, 'events': events, 'event_messages': event_messages, 'topics': topics, 'message_dict': message_dict}
     return render(request, 'base/profile.html', context)
 
 @login_required(login_url='login')
@@ -591,3 +594,34 @@ def deleteInstrument(request, pk):
     context = {'object': instrument}
     return render(request, 'delete_template.html', context)
     
+@login_required(login_url='login')
+def viewInboxMessage(request, pk):
+    user = request.user
+    inboxmessage = user.inboxmessages.get(id=pk)
+    if inboxmessage.is_read == False:
+        inboxmessage.is_read = True
+        inboxmessage.save()
+
+    context = {'message': inboxmessage}
+    return render(request, 'base/message.html', context)
+
+@login_required(login_url='login')
+def createInboxMessage(request, pk):
+    recipient = User.objects.get(id=pk)
+    form = InboxMessageForm()
+    sender = request.user 
+
+    if request.method == 'POST':
+        form = InboxMessageForm(request.POST)
+        if form.is_valid():
+            inboxmessage = form.save(commit=False)
+            inboxmessage.sender = sender
+            inboxmessage.recipient = recipient
+            inboxmessage.name = sender.first_name + " " + sender.last_name
+            
+
+            inboxmessage.save()
+            messages.success(request, 'Your message was successfully sent!')
+            return redirect('user-profile', pk=recipient.id)
+    context = {'recipient': recipient, 'form': form}
+    return render(request, 'base/message_form.html', context)

@@ -1,7 +1,7 @@
 from django.forms import ModelForm
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from .models import Event, Group, Musician, User, Skill, InstrumentSkill
+from .models import Event, Group, Musician, User, Skill, InstrumentSkill, InboxMessage
 #from django.contrib.auth.models import User
 from django.contrib.admin.widgets import  AdminDateWidget, AdminTimeWidget, AdminSplitDateTime
 
@@ -66,6 +66,17 @@ class InstrumentsForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(InstrumentsForm, self).__init__(*args, **kwargs)
+
+        for name, field in self.fields.items():
+            field.widget.attrs.update({'class': 'input'})
+
+class InboxMessageForm(ModelForm):
+    class Meta:
+        model = InboxMessage 
+        fields = ['subject', 'body']
+
+    def __init__(self, *args, **kwargs):
+        super(InboxMessageForm, self).__init__(*args, **kwargs)
 
         for name, field in self.fields.items():
             field.widget.attrs.update({'class': 'input'})

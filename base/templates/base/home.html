@@ -27,8 +27,10 @@
               <a class="btn btn--main btn--pill" href="{% url 'activity' %}">Recent Activities</a>
             </div>
           </div>
+          
           <div class="roomList__header">
             <div>
+              {% if eventsearching %}
               <h2>Events</h2>
               {% if not q %} <!-- If the user didn't make a search query, print number of events -->
                 <p>{{event_count}} events available</p>
@@ -39,30 +41,34 @@
                   <p>{{event_count}} results for "{{q}}"</p>
                 {% endif %}
               {% endif %}
+              {% elif groupsearching %}
+              <h2>Groups</h2>
+              {% if not q %} <!-- If the user didn't make a search query, print number of events -->
+                <p>{{groups.count}} groups available</p>
+              {% else %} <!-- Otherwise, tell them how many results there were for their query -->
+                {% if groups.count == 1 %}
+                  <p>{{groups.count}} result for "{{q}}"</p>
+                {% else %}
+                  <p>{{groups.count}} results for "{{q}}"</p>
+                {% endif %}
+              {% endif %}
+              {% elif musiciansearching %}
+              <h2>Musicians</h2>
+              {% if not q %} <!-- If the user didn't make a search query, print number of events -->
+                <p>{{musicians.count}} musicians available</p>
+              {% else %} <!-- Otherwise, tell them how many results there were for their query -->
+                {% if musicians.count == 1 %}
+                  <p>{{musicians.count}} result for "{{q}}"</p>
+                {% else %}
+                  <p>{{musicians.count}} results for "{{q}}"</p>
+                {% endif %}
+              {% endif %}
+              {% endif %}
             </div>
+            
               
-             <!-- Only music groups can create events -->
-             <a class="btn btn--main" href="{% url 'home' %}">
-              <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
-                <title>add</title>
-                <path
-                  d="M16.943 0.943h-1.885v14.115h-14.115v1.885h14.115v14.115h1.885v-14.115h14.115v-1.885h-14.115v-14.115z"
-                ></path>
-              </svg> 
-              Search Events
-            </a>
-
-
-             <a class="btn btn--main" href="{% url 'search-group' %}">
-              <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
-                <title>add</title>
-                <path
-                  d="M16.943 0.943h-1.885v14.115h-14.115v1.885h14.115v14.115h1.885v-14.115h14.115v-1.885h-14.115v-14.115z"
-                ></path>
-              </svg> 
-              Search Groups
-            </a>
-
+             
+            
             {% if request.user.group %} 
             <a class="btn btn--main" href="{% url 'group-event' %}">
               <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
@@ -91,6 +97,9 @@
           {% endif %}
           {% if groupsearching %}
           {% include 'base/group_feed.html' %}
+          {% endif %}
+          {% if musiciansearching %}
+          {% include 'base/musician_feed.html' %}
           {% endif %}
           
         </div>

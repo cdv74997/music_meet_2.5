@@ -1,4 +1,3 @@
-
 {% extends 'main.html' %}
 
 {% block content %}
@@ -49,20 +48,20 @@
             {% if user.account_type == "G" %}
             <h3>{{user.group.group_name}}</h3>
             <h2>Genre: {{user.group.genre}}</h2>
-            
+
             {% else %}
             <h3>{{user.first_name}} {{user.last_name}}</h3>
             {% endif %}
             <p>@{{user.username}}</p>
             {% if user.account_type == "G" %}
-            
+
             <a class="btn btn--pill edit-user-button" href="{% url 'update-group' user.group.id %}">Edit Group Profile</a>
             {% endif %}
 
             {% if request.user == user %}
             <a href="{% url 'update-user' %}" class="btn btn--main btn--pill">Edit User Profile</a>
             {% endif %}
-            
+
           </div>
           <div class="profile__about">
             <h3>About</h3>
@@ -75,25 +74,16 @@
           <div class="profile__about">
             <h3>Instruments</h3>
             <a class="tag tag--pill tag--sub settings__btn tag--lg" href="{% url 'add-instrument' %}"><i class="im im-plus"></i>Add Instrument</a>
-            <table class="settings__table">
-                {% if instruments %}
-                {% for instrument in instruments %}
-                <tr>
-                  <td class="settings__tableInfo">
-                    <h4>{{instrument.name}}</h4>
-                    
-                  </td>
-                  <td class="settings__tableActions">
-                    <a class="tag tag--pill tag--main settings__btn" href="{% url 'update-instrument' instrument.id %}"><i class="im im-edit"></i> Edit</a>
-                    <a class="tag tag--pill tag--main settings__btn" href="{% url 'delete-instrument' instrument.id %}?next=/account"><i class="im im-x-mark-circle-o"></i>
-                      Delete</a>
-                  </td>
-                </tr>
-                {% endfor %}
-                {% endif %}
-                
-              </table>
-            
+            {% if instruments %}
+            {% for instrument in instruments %}
+            <p>
+              {{instrument.name}}
+            </p>
+            <a class="tag tag--pill tag--main settings__btn" href="{% url 'update-instrument' instrument.id %}"><i class="im im-edit"></i>Edit</a>
+            <a class="tag tag--pill tag--main settings__btn" href="{% url 'delete-instrument' instrument.id %}?next=/account"><i class="im im-x-mark-circle-o"></i>Delete</a>
+            {% endfor %}
+            {% endif %}
+          </div>
 
           <div class="profile__about">
             <h3>Genres</h3>
