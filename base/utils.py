@@ -208,3 +208,4 @@ def searchEvents(request):
         message_dict[event] = len(messages.filter(event_id=event.id))
     
     return events, topics, event_count, event_messages, message_dict, q, now
+

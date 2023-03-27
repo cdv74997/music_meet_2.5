@@ -7,7 +7,7 @@ from django.db.models import Q
 from django.contrib.auth import authenticate, login, logout
 from .utils import searchEvents, paginateEvents
 #from django.contrib.auth.forms import UserCreationForm
-from .models import Event, Topic, Message, Musician, Group, User, Skill, InstrumentSkill
+from .models import Event, Topic, Message, Musician, Group, User
 from .forms import EventForm, UserForm, MusicianForm, GroupForm, MyUserCreationForm, GenresForm, InstrumentsForm
 from django.core.exceptions import ObjectDoesNotExist
 import logging
@@ -291,28 +291,16 @@ def createMusician(request):
 
     if request.method == 'POST':
         form = MusicianForm(request.POST)
-        firstInstrument=request.POST.get('primaryinstrument')
-        firstGenre=request.POST.get('primarygenre')
         #musician = form.save(commit=False)
        # musician.user = request.user
         Musician.objects.create(
             user=request.user,
-            primaryinstrument=firstInstrument,
-            primarygenre=firstGenre,
+            primaryinstrument=request.POST.get('primaryinstrument'),
+            primarygenre=request.POST.get('primarygenre'),
             experience=request.POST.get('experience'),
             location=request.POST.get('location'),
             demo=request.POST.get('demo')
         )
-        Skill.objects.create(
-            owner=request.user,
-            name=firstGenre
-        )
-        InstrumentSkill.objects.create(
-            owner=request.user,
-            name=firstInstrument
-        )
-
-
         
         user = request.user
         
@@ -498,10 +486,10 @@ def activityPage(request):
 @login_required(login_url='login')
 def userAccount(request):
     user = request.user
-    genres = user.skill_set.all()
+    skills = user.skill_set.all()
     instruments = user.instrumentskill_set.all()
 
-    context = {'user': user, 'genres': genres, 'instruments': instruments}
+    context = {'user': user, 'skills': skills, 'instruments': instruments}
     return render(request, 'base/account.html', context)
 
 @login_required(login_url='login')

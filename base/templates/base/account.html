@@ -1,3 +1,4 @@
+
 {% extends 'main.html' %}
 
 {% block content %}
@@ -75,6 +76,7 @@
             <h3>Instruments</h3>
             <a class="tag tag--pill tag--sub settings__btn tag--lg" href="{% url 'add-instrument' %}"><i class="im im-plus"></i>Add Instrument</a>
             <table class="settings__table">
+                {% if instruments %}
                 {% for instrument in instruments %}
                 <tr>
                   <td class="settings__tableInfo">
@@ -88,6 +90,7 @@
                   </td>
                 </tr>
                 {% endfor %}
+                {% endif %}
                 
               </table>
             
