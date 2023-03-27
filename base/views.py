@@ -489,10 +489,10 @@ def activityPage(request):
 @login_required(login_url='login')
 def userAccount(request):
     user = request.user
-    skills = user.skill_set.all()
+    genres = user.skill_set.all()
     instruments = user.instrumentskill_set.all()
 
-    context = {'user': user, 'skills': skills, 'instruments': instruments}
+    context = {'user': user, 'genres': genres, 'instruments': instruments}
     return render(request, 'base/account.html', context)
 
 @login_required(login_url='login')
@@ -545,8 +545,8 @@ def deleteGenre(request, pk):
         genre.delete()
         messages.success(request, "Genre was successfully deleted!")
         return redirect('account')
-    context = {'object': genre}
-    return render(request, 'delete_template.html', context)
+    context = {'obj': genre}
+    return render(request, 'base/delete.html', context)
 
 
 @login_required(login_url='login')
@@ -581,7 +581,7 @@ def updateInstrument(request, pk):
             return redirect('account')
 
     context = {'form': form}
-    return render(request, 'users/instrument_form.html', context)
+    return render(request, 'base/instrument_form.html', context)
 
 @login_required(login_url='login')
 def deleteInstrument(request, pk):
@@ -591,8 +591,8 @@ def deleteInstrument(request, pk):
         instrument.delete()
         messages.success(request, "Instrument was successfully deleted!")
         return redirect('account')
-    context = {'object': instrument}
-    return render(request, 'delete_template.html', context)
+    context = {'obj': instrument}
+    return render(request, 'base/delete.html', context)
     
 @login_required(login_url='login')
 def viewInboxMessage(request, pk):

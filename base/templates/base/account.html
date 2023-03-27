@@ -93,6 +93,8 @@
             <p>
               {{genre.name}}
             </p>
+            <a class="tag tag--pill tag--main settings__btn" href="{% url 'update-genre' genre.id %}"><i class="im im-edit"></i>Edit</a>
+            <a class="tag tag--pill tag--main settings__btn" href="{% url 'delete-genre' genre.id %}?next=/account"><i class="im im-x-mark-circle-o"></i>Delete</a>
             {% endfor %}
             {% endif %}
           </div>

@@ -22,7 +22,7 @@
                     <form class="form" method="POST" action="">
                         <div class="form__group">
                             {% csrf_token %}
-                            <p>Are you sure you want to delete "{{obj}}"?</p>
+                            <p>Are you sure you want to delete "{{obj.name}}"?</p>
                         </div>
 
                         <div class="for__group">
