@@ -12,6 +12,8 @@ from .forms import EventForm, UserForm, MusicianForm, GroupForm, MyUserCreationF
 from django.core.exceptions import ObjectDoesNotExist
 import logging
 import datetime
+from django.core.mail import send_mail
+from django.conf import settings
 
 
 logger = logging.getLogger('django')
@@ -109,6 +111,16 @@ def registerPage(request):
             user.username = user.username.lower()
 
             user.save()
+            subject = 'Welcome to MusicMeet'
+            message = 'We are glad to help you utilize your talent!'
+        
+            send_mail(
+                subject,
+                message,
+                settings.EMAIL_HOST_USER,
+                [form['email']],
+                fail_silently=False,
+            )
             #if musicForm.is_valid():
                 #musicForm.save()
             #if groupForm.is_valid():

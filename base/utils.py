@@ -45,6 +45,7 @@ def calcDistance(musZip,groupZip,maxDistance):
 
         if distance < maxDistance:
             return True
+        
 
 
 def searchEvents(request):
@@ -61,7 +62,7 @@ def searchEvents(request):
         primaryinstrument = musician.primaryinstrument
         instruments = request.user.instrumentskill_set.all()
         musicianZip = musician.location
-        maxDistance = 50 
+        maxDistance = 100
         
         # Retrieve all events that match the current user's genre and preferred instruments:
         #genrenames = genres.name if genres.name is not None else ''
@@ -91,17 +92,22 @@ def searchEvents(request):
       
 
         #Events filtered by distance
+        
         disfilteredEvents = []
 
         # #Filer events based on their distance from the musician
         for event in events:
             eventZip = event.location
+            logging.warning(calcDistance(musicianZip, eventZip, maxDistance))
             if (calcDistance(musicianZip, eventZip, maxDistance)):
                 disfilteredEvents.append(event)
+                
+                
         if disfilteredEvents:
+            
             events = disfilteredEvents
         
-
+        
 
         # Retrieve all messages for the above events:
         event_messages = Message.objects.filter(Q(event__topic__name__icontains=primaryinstrument))
