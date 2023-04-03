@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django import forms
+from django.core.validators import MaxValueValidator, MinValueValidator
 #from django.contrib.auth.models import User
 import uuid
 
@@ -171,3 +172,24 @@ class InboxMessage(models.Model):
     is_read = models.BooleanField(default=False, null=True)
     created = models.DateTimeField(auto_now_add=True)
     id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False)
+
+class Review(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    Musician = models.ForeignKey(Musician, on_delete=models.CASCADE)
+    comment = models.TextField(max_length=250)
+    rate = models.IntegerField(default=0, validators=[
+        MaxValueValidator(5),
+        MinValueValidator(0),
+    ])
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return str(self.pk)
+
+class ReviewChoices(models.IntegerChoices):
+    ONE = 1
+    TWO = 2
+    THREE = 3
+    FOUR = 4
+    FIVE = 5
+    __empty__ = 'Unknown'

@@ -93,19 +93,19 @@ def searchEvents(request):
 
         #Events filtered by distance
         
-        disfilteredEvents = []
+        disfilteredEvents = Event.objects.filter(topic__name__exact="empty")
 
         # #Filer events based on their distance from the musician
         for event in events:
             eventZip = event.location
-            logging.warning(calcDistance(musicianZip, eventZip, maxDistance))
-            if (calcDistance(musicianZip, eventZip, maxDistance)):
-                disfilteredEvents.append(event)
-                
-                
-        if disfilteredEvents:
             
-            events = disfilteredEvents
+            if (calcDistance(musicianZip, eventZip, maxDistance)):
+                disfilteredEvents |= event
+                
+                
+        #if disfilteredEvents:
+            
+        events = disfilteredEvents
         
         
 
