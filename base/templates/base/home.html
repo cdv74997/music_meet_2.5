@@ -30,6 +30,7 @@
           
           <div class="roomList__header">
             <div>
+              {{request.user.musician.primaryinstrument}}
               {% if eventsearching %}
               <h2>Events</h2>
               {% if not q %} <!-- If the user didn't make a search query, print number of events -->

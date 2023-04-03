@@ -175,7 +175,7 @@ class InboxMessage(models.Model):
 
 class Review(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    Musician = models.ForeignKey(Musician, on_delete=models.CASCADE)
+    musician = models.ForeignKey(Musician, on_delete=models.CASCADE)
     comment = models.TextField(max_length=250)
     rate = models.IntegerField(default=0, validators=[
         MaxValueValidator(5),

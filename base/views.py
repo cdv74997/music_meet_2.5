@@ -7,7 +7,7 @@ from django.db.models import Q
 from django.contrib.auth import authenticate, login, logout
 from .utils import searchEvents, paginateEvents
 #from django.contrib.auth.forms import UserCreationForm
-from .models import Event, Topic, Message, Musician, Group, User
+from .models import Event, Topic, Message, Musician, Group, User, Review
 from .forms import EventForm, UserForm, MusicianForm, GroupForm, MyUserCreationForm, GenresForm, InstrumentsForm, InboxMessageForm
 from django.core.exceptions import ObjectDoesNotExist
 import logging
@@ -26,7 +26,7 @@ logger = logging.getLogger('django')
 #   {'id':3, 'name':'Punk Rock Night, Calabasus: The Daffys'},
 #]
 
-def musician(request):
+def musician(request, pk):
     musician = Musician.objects.get(id=pk)
     musician_messages = Musician.message_set.all()
 
@@ -637,3 +637,9 @@ def createInboxMessage(request, pk):
             return redirect('user-profile', pk=recipient.id)
     context = {'recipient': recipient, 'form': form}
     return render(request, 'base/message_form.html', context)
+
+@login_required(login_url="login")
+def viewReviews(request):
+    obj = Review.objects.filter(musician=request.user.musician).order_by('-created_at')
+    context = {'object': obj}
+    return render(request, 'base/ratings.html', context)

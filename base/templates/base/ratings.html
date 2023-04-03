@@ -1,0 +1,18 @@
+{% extends 'main.html' %}
+{% block content %}
+{% for rating in ratings %}
+    <div class="row">
+        <div class="col text-center">
+
+        </div>
+        <div class="col text-center">
+            <span class="fa fa-star checked"></span>
+            <span class="fa fa-star checked"></span>
+            <span class="fa fa-star checked"></span>
+            <span class="fa fa-star"></span>
+            <span class="fa fa-star"></span>
+        </div>
+    </div>
+
+{% endfor %}
+{% endblock content %}

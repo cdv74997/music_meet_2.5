@@ -85,22 +85,24 @@ def searchEvents(request):
                     Q(instruments_needed__icontains=instrument)) &
                     Q(occurring__gte=datetime.date.today())
                 )
-        #if instruments != "":
-            #for instrument in instruments.iterator():
-                #events |= Event.objects.filter((Q(description__icontains=instrument) | Q(instruments_needed__icontains=instrument)) & Q(occurring__gte=datetime.date.today()))
+        if instruments != "":
+            for instrument in instruments.iterator():
+                events |= Event.objects.filter((Q(description__icontains=instrument) | Q(instruments_needed__icontains=instrument)) & Q(occurring__gte=datetime.date.today()))
         
       
 
         #Events filtered by distance
         
-        disfilteredEvents = Event.objects.filter(topic__name__exact="empty")
+        disfilteredEvents = Event.objects.none()
 
         # #Filer events based on their distance from the musician
         for event in events:
             eventZip = event.location
-            
+            id = event.id
+            #loggging.warning(var)
             if (calcDistance(musicianZip, eventZip, maxDistance)):
-                disfilteredEvents |= event
+                disfilteredEvents |= Event.objects.filter(id=id)
+                
                 
                 
         #if disfilteredEvents:
