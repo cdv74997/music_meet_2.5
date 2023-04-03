@@ -26,7 +26,7 @@ logger = logging.getLogger('django')
 #   {'id':3, 'name':'Punk Rock Night, Calabasus: The Daffys'},
 #]
 
-def musician(request):
+def musician(request, pk):
     musician = Musician.objects.get(id=pk)
     musician_messages = Musician.message_set.all()
 
@@ -153,7 +153,7 @@ def groupEvents(request):
 
 def home(request):
     
-    events, topics, event_count, event_messages, message_dict, q, now = searchEvents(request)
+    events, topics, event_count, event_messages, message_dict, q, now, distance = searchEvents(request)
     custom_range, events, paginator = paginateEvents(request, events, 2)
     eventsearching = "yes"
     
@@ -162,7 +162,8 @@ def home(request):
     # Create an object containing the groups object, musicians object, etc.:
     context = {'events': events, 'topics': topics,
      'event_count': event_count, 'event_messages': event_messages, 'message_dict': message_dict,
-     'q': q, 'paginator': paginator, 'custom_range': custom_range, 'eventsearching': eventsearching, 'now': now}
+     'q': q, 'paginator': paginator, 'custom_range': custom_range, 'eventsearching': eventsearching,
+     'now': now, 'distance':distance}
 
     # Load the base/home.html template, send the context object to the template, and output the HTML that is rendered by the template:
     return render(request, 'base/home.html', context)

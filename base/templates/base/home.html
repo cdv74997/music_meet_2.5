@@ -31,6 +31,15 @@
           <div class="roomList__header">
             <div>
               {% if eventsearching %}
+              <label for="Dropdown">Max Distance:</label>
+
+              <select name="distance" id="distance">
+                <option value=15>15 miles</option>
+                <option value=30>30 miles</option>
+                <option value=45>45 miles</option>
+                <option value=60>60 miles</option>
+                <option value=100000000>60+ miles</option>
+              </select>
               <h2>Events</h2>
               {% if not q %} <!-- If the user didn't make a search query, print number of events -->
                 {% if event_count %}

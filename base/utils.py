@@ -6,6 +6,8 @@ import ssl
 import logging
 ssl._create_default_https_context = ssl._create_unverified_context
 
+logging.basicConfig(level=logging.info) 
+
 import pgeocode
 #Calculated distances based on US zip codes
 dist = pgeocode.GeoDistance('US')
@@ -62,7 +64,10 @@ def searchEvents(request):
         primaryinstrument = musician.primaryinstrument
         instruments = request.user.instrumentskill_set.all()
         musicianZip = musician.location
-        maxDistance = 100
+        distance = request.GET.get('distance')
+
+        print("---------------", distance)
+
         
         # Retrieve all events that match the current user's genre and preferred instruments:
         #genrenames = genres.name if genres.name is not None else ''
@@ -99,9 +104,9 @@ def searchEvents(request):
         for event in events:
             eventZip = event.location
             
-            if (calcDistance(musicianZip, eventZip, maxDistance)):
+            if (calcDistance(musicianZip, eventZip, distance)):
                 disfilteredEvents |= event
-                
+                            
                 
         #if disfilteredEvents:
             
@@ -163,6 +168,8 @@ def searchEvents(request):
             #groups |= userGroups
 
     except AttributeError:
+        distance = 100000
+        print("---------------", distance)
         # this is how our search is extracted from what is passed to url
         q = request.GET.get('q') if request.GET.get('q') != None else ''
         # What this is is a query for our events
@@ -213,5 +220,5 @@ def searchEvents(request):
     for event in events:
         message_dict[event] = len(messages.filter(event_id=event.id))
     
-    return events, topics, event_count, event_messages, message_dict, q, now
+    return events, topics, event_count, event_messages, message_dict, q, now, distance
 
