@@ -3,7 +3,7 @@ from django.contrib import admin
 # Register your models here.
 
 
-from .models import Event, Topic, Message, Contract, Group, Musician, User, Skill, InstrumentSkill, Review
+from .models import Event, Topic, Message, Contract, Group, Musician, User, Skill, InstrumentSkill, Review, Distances
 
 admin.site.register(Event)
 admin.site.register(Topic)
@@ -15,3 +15,4 @@ admin.site.register(User)
 admin.site.register(Skill)
 admin.site.register(InstrumentSkill)
 admin.site.register(Review)
+admin.site.register(Distances)

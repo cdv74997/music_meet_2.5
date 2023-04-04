@@ -193,3 +193,10 @@ class ReviewChoices(models.IntegerChoices):
     FOUR = 4
     FIVE = 5
     __empty__ = 'Unknown'
+
+class Distances(models.Model):
+    distance = models.IntegerField(default=1)
+    label = models.CharField(max_length=20)
+
+    def __str__(self):
+        return str(self.label)

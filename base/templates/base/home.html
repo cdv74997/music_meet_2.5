@@ -29,9 +29,24 @@
           </div>
           
           <div class="roomList__header">
+            
             <div>
-              {{request.user.musician.primaryinstrument}}
+              
               {% if eventsearching %}
+              <label for="Dropdown">Max Distance:</label>
+
+              <select name="distancetocalc" id="distance">
+                <option disabled="true" selected>-- Select Distance --</option>
+                {% for dist in distanceChoices %}
+                <option value="{{dist.distance}}">{{dist.label}}</option>
+                {% endfor %}
+              </select>
+              
+              <form method="GET" action="{% url 'home' %}">
+                <input type="submit" value="Filter Distance" onclick="getdistance()"/>
+                <input type="number" id="distanceDisplay" name="distance"></input>
+              </form>
+              
               <h2>Events</h2>
               {% if not q %} <!-- If the user didn't make a search query, print number of events -->
                 {% if event_count %}
@@ -46,6 +61,7 @@
                 {% else %}
                   <p>{{event_count}} results for "{{q}}"</p>
                 {% endif %}
+                
               {% endif %}
               {% elif groupsearching %}
               <h2>Groups</h2>

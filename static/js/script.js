@@ -83,3 +83,9 @@ for (var i = 0; i < allEventDescriptions.length; i++) {
   description.innerHTML = truncate(description.textContent, 100);
 }
 
+function getdistance() {
+  displaydistance = document.querySelector("#distance")
+  ans = displaydistance.options[displaydistance.selectedIndex].value;
+  document.querySelector("#distanceDisplay").textContent=ans;
+}
+

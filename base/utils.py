@@ -62,7 +62,13 @@ def searchEvents(request):
         primaryinstrument = musician.primaryinstrument
         instruments = request.user.instrumentskill_set.all()
         musicianZip = musician.location
-        maxDistance = 100
+        filterDistanceParam = request.GET.get('distance')
+        if filterDistanceParam is not None:
+            distance = int(filterDistanceParam)
+        else:
+            distance = 0.0
+
+        print("---------------", distance)
         
         # Retrieve all events that match the current user's genre and preferred instruments:
         #genrenames = genres.name if genres.name is not None else ''
@@ -100,7 +106,7 @@ def searchEvents(request):
             eventZip = event.location
             id = event.id
             #loggging.warning(var)
-            if (calcDistance(musicianZip, eventZip, maxDistance)):
+            if (calcDistance(musicianZip, eventZip, distance)):
                 disfilteredEvents |= Event.objects.filter(id=id)
                 
                 
@@ -215,5 +221,5 @@ def searchEvents(request):
     for event in events:
         message_dict[event] = len(messages.filter(event_id=event.id))
     
-    return events, topics, event_count, event_messages, message_dict, q, now
+    return events, topics, event_count, event_messages, message_dict, q, now, distance
 
