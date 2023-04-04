@@ -66,7 +66,7 @@ def searchEvents(request):
         if filterDistanceParam is not None:
             distance = int(filterDistanceParam)
         else:
-            distance = 0.0
+            distance = 10000000000
 
         print("---------------", distance)
         
