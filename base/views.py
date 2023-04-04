@@ -111,16 +111,7 @@ def registerPage(request):
             user.username = user.username.lower()
 
             user.save()
-            subject = 'Welcome to MusicMeet'
-            message = 'We are glad to help you utilize your talent!'
-        
-            send_mail(
-                subject,
-                message,
-                settings.EMAIL_HOST_USER,
-                [form['email']],
-                fail_silently=False,
-            )
+            
             #if musicForm.is_valid():
                 #musicForm.save()
             #if groupForm.is_valid():
@@ -320,6 +311,16 @@ def createMusician(request):
         )
         
         user = request.user
+        subject = 'Welcome to MusicMeet'
+        message = 'We are glad to help you utilize your talent!'
+        
+        send_mail(
+            subject,
+            message,
+            settings.EMAIL_HOST_USER,
+            [user.email],
+            fail_silently=False,
+        )
         
         #group_Account = user.group_Account
         #if form.is_valid():

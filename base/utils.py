@@ -171,6 +171,7 @@ def searchEvents(request):
             #groups |= userGroups
 
     except AttributeError:
+        distance = 100000000000
         # this is how our search is extracted from what is passed to url
         q = request.GET.get('q') if request.GET.get('q') != None else ''
         # What this is is a query for our events
