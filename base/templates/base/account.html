@@ -80,7 +80,11 @@
               {{instrument.name}}
             </p>
             <a class="tag tag--pill tag--main settings__btn" href="{% url 'update-instrument' instrument.id %}"><i class="im im-edit"></i>Edit</a>
+            {% if not instrument.primary %}
             <a class="tag tag--pill tag--main settings__btn" href="{% url 'delete-instrument' instrument.id %}?next=/account"><i class="im im-x-mark-circle-o"></i>Delete</a>
+            
+            {% endif %}
+            <br>
             {% endfor %}
             {% endif %}
           </div>
@@ -94,7 +98,10 @@
               {{genre.name}}
             </p>
             <a class="tag tag--pill tag--main settings__btn" href="{% url 'update-genre' genre.id %}"><i class="im im-edit"></i>Edit</a>
+            {% if not genre.primary %}
             <a class="tag tag--pill tag--main settings__btn" href="{% url 'delete-genre' genre.id %}?next=/account"><i class="im im-x-mark-circle-o"></i>Delete</a>
+            {% endif %}
+            
             {% endfor %}
             {% endif %}
           </div>

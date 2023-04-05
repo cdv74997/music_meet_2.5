@@ -49,7 +49,7 @@ class GenresForm(ModelForm):
     class Meta:
         model = Skill
         fields = '__all__'
-        exclude = ['owner']
+        exclude = ['owner', 'primary']
 
     def __init__(self, *args, **kwargs):
         super(GenresForm, self).__init__(*args, **kwargs)
@@ -62,7 +62,7 @@ class InstrumentsForm(ModelForm):
     class Meta:
         model = InstrumentSkill
         fields = '__all__'
-        exclude = ['owner']
+        exclude = ['owner', 'primary']
 
     def __init__(self, *args, **kwargs):
         super(InstrumentsForm, self).__init__(*args, **kwargs)

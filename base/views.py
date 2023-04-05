@@ -299,14 +299,14 @@ def createMusician(request):
 
     if request.method == 'POST':
         form = MusicianForm(request.POST)
-        primarygenre = request.POST.get('primarygenre'),
-        primaryinstrument=request.POST.get('primaryinstrument'),
+        primarygenre = request.POST.get('primarygenre')
+        primaryinstrument=request.POST.get('primaryinstrument')
         #musician = form.save(commit=False)
        # musician.user = request.user
         Musician.objects.create(
             user=request.user,
-            primaryinstrument=request.POST.get('primaryinstrument'),
-            primarygenre=request.POST.get('primarygenre'),
+            primaryinstrument=primaryinstrument,
+            primarygenre=primarygenre,
             experience=request.POST.get('experience'),
             location=request.POST.get('location'),
             demo=request.POST.get('demo')
@@ -557,21 +557,28 @@ def updateGenre(request, pk):
     if request.method == "POST":
         form = GenresForm(request.POST, instance=genre)
         if form.is_valid():
+            if genre.primary:
+                Musician.objects.filter(id=user.musician.id).update(primarygenre=form['name'])
+
             
             form.save()
             messages.success(request, 'Genre was revised successfully')
             return redirect('account')
 
     context = {'form': form}
-    return render(request, 'base/skill_form.html', context)
+    return render(request, 'base/genre_form.html', context)
 
 @login_required(login_url='login')
 def deleteGenre(request, pk):
     user = request.user
     genre = user.skill_set.get(id=pk)
     if request.method == "POST":
-        genre.delete()
-        messages.success(request, "Genre was successfully deleted!")
+        if genre.primary:
+            messages.error(request, "You are not allowed to delete your primary Genre!")
+
+        else:
+            genre.delete()
+            messages.success(request, "Genre was successfully deleted!")
         return redirect('account')
     context = {'obj': genre}
     return render(request, 'base/delete.html', context)
@@ -603,6 +610,8 @@ def updateInstrument(request, pk):
     if request.method == "POST":
         form = InstrumentsForm(request.POST, instance=instrument)
         if form.is_valid():
+            if instrument.primary:
+                Musician.objects.filter(id=user.musician.id).update(primaryinstrument=form['name'])
 
             form.save()
             messages.success(request, 'Instrument was revised successfully!')
@@ -616,8 +625,11 @@ def deleteInstrument(request, pk):
     user = request.user
     instrument = user.instrumentskill_set.get(id=pk)
     if request.method == "POST":
-        instrument.delete()
-        messages.success(request, "Instrument was successfully deleted!")
+        if instrument.primary:
+            messages.error(request, "You are not allowed to delete your primary instrument!")
+        else:
+            instrument.delete()
+            messages.success(request, "Instrument was successfully deleted!")
         return redirect('account')
     context = {'obj': instrument}
     return render(request, 'base/delete.html', context)
