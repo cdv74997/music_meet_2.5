@@ -33,19 +33,20 @@
             <div>
               
               {% if eventsearching %}
-              <label for="Dropdown">Max Distance:</label>
+              <!--<label for="Dropdown">Max Distance:</label> -->
 
+              <form method="GET" action="{% url 'home' %}">
+                <input type="submit" value="Filter Distance" onclick="getdistance()"/>
+                <input type = "hidden" id="distanceDisplay" name="distance"></input>
               <select name="distancetocalc" id="distance">
                 <option disabled="true" selected>-- Select Distance --</option>
                 {% for dist in distanceChoices %}
                 <option value="{{dist.distance}}">{{dist.label}}</option>
                 {% endfor %}
+              </form>
               </select>
               
-              <form method="GET" action="{% url 'home' %}">
-                <input type="submit" value="Filter Distance" onclick="getdistance()"/>
-                <input id="distanceDisplay" name="distance"></input>
-              </form>
+          
               
               <h2>Events</h2>
               {% if not q %} <!-- If the user didn't make a search query, print number of events -->
