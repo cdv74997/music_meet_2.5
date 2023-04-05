@@ -10,11 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <title>MusicMeet - Your Next Debut Starts Here!</title>
     <script type="text/Javascript">
-      function getdistance() {
-          displaydistance = document.querySelector("#distance")
-          ans = displaydistance.options[displaydistance.selectedIndex].value;
-          document.querySelector("#distanceDisplay").value=ans;
-      }
+      
       
 
       
@@ -46,7 +42,11 @@
     {% endblock %}
     <script src="{% static 'js/script.js' %}"></script>
     <script type="text/Javascript">
-      
+      function getdistance() {
+          displaydistance = document.querySelector("#distance")
+          ans = displaydistance.options[displaydistance.selectedIndex].value;
+          document.querySelector("#distanceDisplay").value=ans;
+      }
       const one = document.getElementById('first')
       const two = document.getElementById('second')
       const three = document.getElementById('third')
@@ -102,6 +102,7 @@
       arr.forEach(item => item.addEventListener('click', (event)=>{
         handleSelect(event.target.id)
       }))
+      
     </script>
     
   </body>

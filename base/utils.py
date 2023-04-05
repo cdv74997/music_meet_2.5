@@ -64,6 +64,7 @@ def searchEvents(request):
         musicianZip = musician.location
         filterDistanceParam = request.GET.get('distance')
         if filterDistanceParam is not None:
+            logging.warning('test')
             distance = int(filterDistanceParam)
         else:
             distance = 10000000000
