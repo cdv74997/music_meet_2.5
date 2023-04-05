@@ -7,7 +7,7 @@ from django.db.models import Q
 from django.contrib.auth import authenticate, login, logout
 from .utils import searchEvents, paginateEvents
 #from django.contrib.auth.forms import UserCreationForm
-from .models import Event, Topic, Message, Musician, Group, User, Review, Distances
+from .models import Event, Topic, Message, Musician, Group, User, Review, Distances, Skill, InstrumentSkill
 from .forms import EventForm, UserForm, MusicianForm, GroupForm, MyUserCreationForm, GenresForm, InstrumentsForm, InboxMessageForm
 from django.core.exceptions import ObjectDoesNotExist
 import logging
@@ -299,6 +299,8 @@ def createMusician(request):
 
     if request.method == 'POST':
         form = MusicianForm(request.POST)
+        primarygenre = request.POST.get('primarygenre'),
+        primaryinstrument=request.POST.get('primaryinstrument'),
         #musician = form.save(commit=False)
        # musician.user = request.user
         Musician.objects.create(
@@ -308,6 +310,17 @@ def createMusician(request):
             experience=request.POST.get('experience'),
             location=request.POST.get('location'),
             demo=request.POST.get('demo')
+        )
+
+        Skill.objects.create(
+            owner=request.user,
+            name=primarygenre,
+            primary=True
+        )
+        InstrumentSkill.objects.create(
+            owner=request.user,
+            name=primaryinstrument,
+            primary=True
         )
         
         user = request.user
