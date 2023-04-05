@@ -643,7 +643,7 @@ def createInboxMessage(request, pk):
 
 @login_required(login_url="login")
 def viewReviews(request):
-    obj = Review.objects.filter(musician=request.user.musician).order_by('-created_at')
-    context = {'object': obj}
+    reviews = Review.objects.filter(musician=request.user.musician).order_by('-created_at').first()
+    context = {'reviews': reviews}
     return render(request, 'base/ratings.html', context)
 

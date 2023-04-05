@@ -126,6 +126,8 @@ class Musician(models.Model):
     #demo, url field, max lenght of 200, will be a url to the demo?
     demo = models.URLField(max_length = 200, null = True, blank = True)
     id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False)
+    def __str__(self):
+        return str(self.user.first_name + " " + self.user.last_name)
 
 
 class Group(models.Model):
@@ -144,6 +146,8 @@ class Group(models.Model):
 
     featured_image = models.ImageField(null=True, default="avatar.svg")
     id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False)
+    def __str__(self):
+        return str(self.group_name)
     
 
 class Contract(models.Model):
@@ -174,7 +178,7 @@ class InboxMessage(models.Model):
     id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False)
 
 class Review(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE)
     musician = models.ForeignKey(Musician, on_delete=models.CASCADE)
     comment = models.TextField(max_length=250)
     rate = models.IntegerField(default=0, validators=[

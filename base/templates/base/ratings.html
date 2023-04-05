@@ -1,18 +1,29 @@
 {% extends 'main.html' %}
 {% block content %}
-{% for rating in ratings %}
+    <script type="text/JavaScript">
+      
+    </script>
+    <h1>My Reviews</h1>
+    {% if reviews %}
+    
     <div class="row">
         <div class="col text-center">
-
+            <h3>{{reviews.group}}</h3>
+        </div>
+        
+        <div class="col text-center">
+            <span class="fa fa-star" id="first"></span>
+            <span class="fa fa-star" id="second"></span>
+            <span class="fa fa-star" id="third"></span>
+            <span class="fa fa-star" id="fourth"></span>
+            <span class="fa fa-star" id="fifth"></span>
         </div>
         <div class="col text-center">
-            <span class="fa fa-star checked"></span>
-            <span class="fa fa-star checked"></span>
-            <span class="fa fa-star checked"></span>
-            <span class="fa fa-star"></span>
-            <span class="fa fa-star"></span>
+            <p>{{reviews.comment}}</p>
         </div>
     </div>
 
-{% endfor %}
+   {% else %}
+   <h1>You have no ratings yet. Play at events to gain ratings.</h1>
+   {% endif %}
 {% endblock content %}
