@@ -558,7 +558,7 @@ def updateGenre(request, pk):
         form = GenresForm(request.POST, instance=genre)
         if form.is_valid():
             if genre.primary:
-                Musician.objects.filter(id=user.musician.id).update(primarygenre=form['name'])
+                Musician.objects.filter(id=user.musician.id).update(primarygenre=form.cleaned_data.get("name"))
 
             
             form.save()
@@ -611,7 +611,7 @@ def updateInstrument(request, pk):
         form = InstrumentsForm(request.POST, instance=instrument)
         if form.is_valid():
             if instrument.primary:
-                Musician.objects.filter(id=user.musician.id).update(primaryinstrument=form['name'])
+                Musician.objects.filter(id=user.musician.id).update(primaryinstrument=form.cleaned_data.get("name"))
 
             form.save()
             messages.success(request, 'Instrument was revised successfully!')
