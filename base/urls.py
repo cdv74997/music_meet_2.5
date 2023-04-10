@@ -37,4 +37,5 @@ urlpatterns = [
     path('update-genre/<str:pk>/', views.updateGenre, name="update-genre"),
     path('delete-genre/<str:pk>/', views.deleteGenre, name="delete-genre"),
     path('view-reviews/', views.viewReviews, name="view-reviews"),
+    path('group-events/<str:pk>/', views.groupEventSearch, name='group-events'),
 ]

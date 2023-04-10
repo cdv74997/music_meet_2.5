@@ -141,6 +141,25 @@ def groupEvents(request):
 
     return render(request, 'base/home.html', context)
 
+def groupEventSearch(request, pk):
+    group = Group.objects.get(id=pk)
+    print(group.user.id)
+    eventsG = Event.objects.filter(host__id=group.user.id).order_by("occurring")
+    print(eventsG)
+    eventsG_count = eventsG.count
+    messages = Message.objects.filter(user=group.user).order_by("created")
+    topics = Topic.objects.all()[0:5]
+    custom_range, eventsG, paginator = paginateEvents(request, eventsG, 8)
+    message_dict = {}
+    groupeventsearching = "yes"
+    for event in eventsG:
+        message_dict[event] = len(messages.filter(event__id=event.id))
+    context = {'eventsG': eventsG, 'eventsG_count': eventsG_count,'messages': messages, 'message_dict': message_dict, 'topics': topics, 'custom_range': custom_range,
+    'paginator': paginator, 'group': group, 'groupeventsearching': groupeventsearching}
+    
+
+    return render(request, 'base/home.html', context)
+
 
 
 def home(request):
@@ -671,4 +690,7 @@ def viewReviews(request):
     reviews = Review.objects.filter(musician=request.user.musician).order_by('-created_at').first()
     context = {'reviews': reviews}
     return render(request, 'base/ratings.html', context)
+
+
+
 
