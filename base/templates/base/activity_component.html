@@ -11,8 +11,7 @@
            <img src="{{message.user.avatar.url}}" />
          </div>
          <p>
-           @{{message.user}}
-           <span>{{message.created|timesince}} ago</span>
+           @{{message.user.username}}
          </p>
        </a>
        {% if request.user == message.user %}
@@ -29,7 +28,8 @@
        {% endif %}
      </div>
      <div class="activities__boxContent">
-       <p>replied to post “<a href="{% url 'event' message.event.id %}">{{message.event}}</a>”</p>
+       <p>replied to post <a href="{% url 'event' message.event.id %}">"{{message.event}}"</a></p>
+       <span>{{message.created|timesince}} ago</span>
        <div class="activities__boxRoomContent">
          {{message.body}}
        </div>
