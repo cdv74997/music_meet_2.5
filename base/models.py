@@ -155,7 +155,7 @@ class Group(models.Model):
 class Contract(models.Model):
     musician = models.ForeignKey(Musician, on_delete=models.CASCADE)
     group = models.ForeignKey(Group, on_delete=models.CASCADE)
-    event = models.ForeignKey('Event', on_delete = models.CASCADE, null = True, blank = True)
+    event = models.ForeignKey(Event, on_delete = models.CASCADE, null = True, blank = True)
 
     #unique id for each contract
     contract_id = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)

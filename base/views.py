@@ -738,6 +738,12 @@ def createContract(request, pk):
     context = {'events': events, 'formC': formC}
     return render(request, 'base/contract-create.html', context)
 
+@login_required(login_url="login")
+def reviewContract(request, pk):
+    contract = Contract.objects.get(id=pk)
+    context = {'contract': contract}
+    return render(request, 'base/review-contract.html', context)
+
 
 
 
