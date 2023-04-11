@@ -179,6 +179,7 @@ class InboxMessage(models.Model):
     body = models.TextField()
     is_read = models.BooleanField(default=False, null=True)
     contract_related = models.BooleanField(default=False, null=True)
+    contract_id = models.CharField(max_length=200, null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True)
     id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False)
 

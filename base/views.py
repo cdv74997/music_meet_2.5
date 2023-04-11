@@ -722,6 +722,7 @@ def createContract(request, pk):
                 subject = subject,
                 body = messagebody,
                 contract_related = True,
+                contract_id = contract.contract_id,
 
             )
             send_mail(
