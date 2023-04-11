@@ -38,4 +38,5 @@ urlpatterns = [
     path('delete-genre/<str:pk>/', views.deleteGenre, name="delete-genre"),
     path('view-reviews/', views.viewReviews, name="view-reviews"),
     path('group-events/<str:pk>/', views.groupEventSearch, name='group-events'),
+    path('create-contract/<str:pk>/', views.createContract, name='create-contract'),
 ]

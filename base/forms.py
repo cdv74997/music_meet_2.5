@@ -1,7 +1,7 @@
 from django.forms import ModelForm
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from .models import Event, Group, Musician, User, Skill, InstrumentSkill, InboxMessage
+from .models import Event, Group, Musician, User, Skill, InstrumentSkill, InboxMessage, Contract
 #from django.contrib.auth.models import User
 from django.contrib.admin.widgets import  AdminDateWidget, AdminTimeWidget, AdminSplitDateTime
 
@@ -77,6 +77,18 @@ class InboxMessageForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(InboxMessageForm, self).__init__(*args, **kwargs)
+
+        for name, field in self.fields.items():
+            field.widget.attrs.update({'class': 'input'})
+
+class ContractForm(forms.ModelForm):
+    class Meta:
+        model = Contract
+        fields = '__all__'
+        exclude = ['musician', 'group', 'event', 'contract_id', 'accepted']
+
+    def __init__(self, *args, **kwargs):
+        super(ContractForm, self).__init__(*args, **kwargs)
 
         for name, field in self.fields.items():
             field.widget.attrs.update({'class': 'input'})

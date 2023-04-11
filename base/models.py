@@ -154,6 +154,7 @@ class Group(models.Model):
 
 class Contract(models.Model):
     musician = models.ForeignKey(Musician, on_delete=models.CASCADE)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE)
     event = models.ForeignKey('Event', on_delete = models.CASCADE, null = True, blank = True)
 
     #unique id for each contract
@@ -165,6 +166,7 @@ class Contract(models.Model):
     end_time = models.CharField(max_length = 10, default='TBD')
     location = models.CharField(max_length =100, default='TBD')
     pay = models.DecimalField(max_digits=7, decimal_places=2, default='15.00')
+    accepted = models.BooleanField(default=False)
     
     def __str__(self):
          return self.musician.user.first_name + "'s Contract"
@@ -176,8 +178,11 @@ class InboxMessage(models.Model):
     subject = models.CharField(max_length=200, null=True, blank=True)
     body = models.TextField()
     is_read = models.BooleanField(default=False, null=True)
+    contract_related = models.BooleanField(default=False, null=True)
     created = models.DateTimeField(auto_now_add=True)
     id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False)
+
+ 
 
 class Review(models.Model):
     group = models.ForeignKey(Group, on_delete=models.CASCADE)
