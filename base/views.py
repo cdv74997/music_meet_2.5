@@ -693,7 +693,60 @@ def viewReviews(request):
     context = {'reviews': reviews}
     return render(request, 'base/ratings.html', context)
 
-<<<<<<< HEAD
+@login_required(login_url="login")
+def createContract(request, pk):
+    musician = Musician.objects.get(id=pk)
+    user = request.user
+    events = Event.objects.filter(host=user)
+    
+    formC = ContractForm()
+    for field in formC:
+        print(field.label)
+    
+    if request.method == "POST":
+        formC = ContractForm(request.POST)
+        eventC = request.POST.get('eventC')
+        #eventId = event.id
+        eventsub = Event.objects.get(name=eventC)
+        if formC.is_valid():
+            contract = formC.save(commit=False)
+            contract.musician = musician
+            contract.group = user.group
+            contract.event = eventsub
+            contract.save()
+            messagebody = "Hello, " + str(musician) + " you have a new contract offer from " + str(user.group) + ".\n" + "Please respond via the button below."
+            messagebodyEmail = "Hello, " + str(musician) + " you have a new contract offer from " + str(user.group) + ".\n" + "Please respond by viewing your inbox."
+            subject = "Music Meet Contract Offer"
+            InboxMessage.objects.create(
+                sender=user,
+                recipient=musician.user,
+                name=user.first_name + " " + user.last_name,
+                subject = subject,
+                body = messagebody,
+                contract_related = True,
+                contract_id = contract.contract_id,
+
+            )
+            send_mail(
+            subject,
+            messagebodyEmail,
+            settings.EMAIL_HOST_USER,
+            [musician.user.email],
+            fail_silently=False,
+        )
+            messages.success(request, 'Your contract was sent successfully')
+            return redirect('home')
+        else:
+            messages.error(request, "Your contract returned an error!")
+    context = {'events': events, 'formC': formC}
+    return render(request, 'base/contract-create.html', context)
+
+@login_required(login_url="login")
+def reviewContract(request, pk):
+    contract = Contract.objects.get(id=pk)
+    context = {'contract': contract}
+    return render(request, 'base/review-contract.html', context)
+
 @login_required(login_url="login")
 def createContract(request, pk):
     musician = Musician.objects.get(id=pk)
@@ -749,9 +802,5 @@ def reviewContract(request, pk):
     return render(request, 'base/review-contract.html', context)
 
 # This is  a comment
-
-=======
->>>>>>> 1d93795c8d8523dbc62df9773e49f1f06390f202
-
 
 
