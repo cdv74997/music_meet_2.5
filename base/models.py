@@ -20,7 +20,7 @@ class User(AbstractUser):
     #musician_Account = models.BooleanField(default=False, null=True)
     #group_Account = models.BooleanField(default=False, null=True)
     email = models.EmailField(unique=True, null=True)
-    username = models.CharField(max_length=100)
+    
     bio = models.TextField(null=True)
 
     avatar = models.ImageField(null=True, default="avatar.svg")

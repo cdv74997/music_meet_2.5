@@ -745,6 +745,8 @@ def reviewContract(request, pk):
     context = {'contract': contract}
     return render(request, 'base/review-contract.html', context)
 
+# This is  a comment
+
 
 
 
