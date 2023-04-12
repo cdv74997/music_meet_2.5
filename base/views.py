@@ -7,8 +7,8 @@ from django.db.models import Q
 from django.contrib.auth import authenticate, login, logout
 from .utils import searchEvents, paginateEvents
 #from django.contrib.auth.forms import UserCreationForm
-from .models import Event, Topic, Message, Musician, Group, User, Review, Distances, Skill, InstrumentSkill, InboxMessage, Contract
-from .forms import EventForm, UserForm, MusicianForm, GroupForm, MyUserCreationForm, GenresForm, InstrumentsForm, InboxMessageForm, ContractForm
+from .models import Event, Topic, Message, Musician, Group, User, Review, Distances, Skill, InstrumentSkill
+from .forms import EventForm, UserForm, MusicianForm, GroupForm, MyUserCreationForm, GenresForm, InstrumentsForm, InboxMessageForm
 from django.core.exceptions import ObjectDoesNotExist
 import logging
 import datetime
@@ -403,6 +403,7 @@ def createEvent(request):
         if form.is_valid():
             event = form.save(commit=False)
             print(event.occurring)
+            #Do not allow user to create event if the date has already passed 
             Event.objects.create(
                 host=request.user,
                 topic=topic,
@@ -413,6 +414,7 @@ def createEvent(request):
                 flier=request.FILES.get('flier'),
                 description=request.POST.get('description'),
                 occurring=event.occurring,
+                location = request.POST.get('location'),
         
             )
             return redirect('home')
@@ -690,60 +692,6 @@ def viewReviews(request):
     reviews = Review.objects.filter(musician=request.user.musician).order_by('-created_at').first()
     context = {'reviews': reviews}
     return render(request, 'base/ratings.html', context)
-
-@login_required(login_url="login")
-def createContract(request, pk):
-    musician = Musician.objects.get(id=pk)
-    user = request.user
-    events = Event.objects.filter(host=user)
-    
-    formC = ContractForm()
-    for field in formC:
-        print(field.label)
-    
-    if request.method == "POST":
-        formC = ContractForm(request.POST)
-        eventC = request.POST.get('eventC')
-        #eventId = event.id
-        eventsub = Event.objects.get(name=eventC)
-        if formC.is_valid():
-            contract = formC.save(commit=False)
-            contract.musician = musician
-            contract.group = user.group
-            contract.event = eventsub
-            contract.save()
-            messagebody = "Hello, " + str(musician) + " you have a new contract offer from " + str(user.group) + ".\n" + "Please respond via the button below."
-            messagebodyEmail = "Hello, " + str(musician) + " you have a new contract offer from " + str(user.group) + ".\n" + "Please respond by viewing your inbox."
-            subject = "Music Meet Contract Offer"
-            InboxMessage.objects.create(
-                sender=user,
-                recipient=musician.user,
-                name=user.first_name + " " + user.last_name,
-                subject = subject,
-                body = messagebody,
-                contract_related = True,
-                contract_id = contract.contract_id,
-
-            )
-            send_mail(
-            subject,
-            messagebodyEmail,
-            settings.EMAIL_HOST_USER,
-            [musician.user.email],
-            fail_silently=False,
-        )
-            messages.success(request, 'Your contract was sent successfully')
-            return redirect('home')
-        else:
-            messages.error(request, "Your contract returned an error!")
-    context = {'events': events, 'formC': formC}
-    return render(request, 'base/contract-create.html', context)
-
-@login_required(login_url="login")
-def reviewContract(request, pk):
-    contract = Contract.objects.get(id=pk)
-    context = {'contract': contract}
-    return render(request, 'base/review-contract.html', context)
 
 
 
