@@ -7,8 +7,8 @@ from django.db.models import Q
 from django.contrib.auth import authenticate, login, logout
 from .utils import searchEvents, paginateEvents
 #from django.contrib.auth.forms import UserCreationForm
-from .models import Event, Topic, Message, Musician, Group, User, Review, Distances, Skill, InstrumentSkill, InboxMessage, Contract
-from .forms import EventForm, UserForm, MusicianForm, GroupForm, MyUserCreationForm, GenresForm, InstrumentsForm, InboxMessageForm, ContractForm
+from .models import Event, Topic, Message, Musician, Group, User, Review, Distances, Skill, InstrumentSkill
+from .forms import EventForm, UserForm, MusicianForm, GroupForm, MyUserCreationForm, GenresForm, InstrumentsForm, InboxMessageForm
 from django.core.exceptions import ObjectDoesNotExist
 import logging
 import datetime
@@ -403,6 +403,7 @@ def createEvent(request):
         if form.is_valid():
             event = form.save(commit=False)
             print(event.occurring)
+            #Do not allow user to create event if the date has already passed 
             Event.objects.create(
                 host=request.user,
                 topic=topic,
@@ -413,6 +414,7 @@ def createEvent(request):
                 flier=request.FILES.get('flier'),
                 description=request.POST.get('description'),
                 occurring=event.occurring,
+                location = request.POST.get('location'),
         
             )
             return redirect('home')
@@ -691,6 +693,7 @@ def viewReviews(request):
     context = {'reviews': reviews}
     return render(request, 'base/ratings.html', context)
 
+<<<<<<< HEAD
 @login_required(login_url="login")
 def createContract(request, pk):
     musician = Musician.objects.get(id=pk)
@@ -747,6 +750,8 @@ def reviewContract(request, pk):
 
 # This is  a comment
 
+=======
+>>>>>>> 1d93795c8d8523dbc62df9773e49f1f06390f202
 
 
 
