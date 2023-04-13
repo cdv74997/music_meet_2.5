@@ -7,7 +7,7 @@ from django.db.models import Q
 from django.contrib.auth import authenticate, login, logout
 from .utils import searchEvents, paginateEvents
 #from django.contrib.auth.forms import UserCreationForm
-from .models import Event, Topic, Message, Musician, Group, User, Review, Distances, Skill, InstrumentSkill, InboxMessage
+from .models import Event, Topic, Message, Musician, Group, User, Review, Distances, Skill, InstrumentSkill, InboxMessage, Contract
 from .forms import EventForm, UserForm, MusicianForm, GroupForm, MyUserCreationForm, GenresForm, InstrumentsForm, InboxMessageForm, ContractForm
 from django.core.exceptions import ObjectDoesNotExist
 import logging
@@ -755,7 +755,7 @@ def createContract(request, pk):
 
 @login_required(login_url="login")
 def reviewContract(request, pk):
-    contract = Contract.objects.get(id=pk)
+    contract = Contract.objects.get(contract_id=pk)
     context = {'contract': contract}
     return render(request, 'base/review-contract.html', context)
 
@@ -828,11 +828,6 @@ def viewMusician(request, pk):
     context = {'musician': musician, 'contractable': contractable, 'primaryInstrument': primaryInstrument, 'instruments': instruments, 'primaryGenre': primaryGenre, 'genres': genres}
     return render(request, 'base/musician.html', context)
 
-@login_required(login_url="login")
-def reviewContract(request, pk):
-    contract = Contract.objects.get(id=pk)
-    context = {'contract': contract}
-    return render(request, 'base/review-contract.html', context)
 
 # This is  a comment
 
