@@ -78,11 +78,11 @@ def searchEvents(request):
             (Q(topic__name__icontains=primarygenre) |
             Q(description__icontains=primaryinstrument) |
             Q(instruments_needed__icontains=primaryinstrument)) &
-            Q(occurring__gte=datetime.date.today())
+            (Q(occurring__gte=datetime.date.today() & Q(booked=False)))
          )
         if genres:
             for genre in genres.iterator():
-               events |= Event.objects.filter(Q(topic__name__icontains=genre) & Q(occurring__gte=datetime.date.today()))
+               events |= Event.objects.filter(Q(topic__name__icontains=genre) & (Q(occurring__gte=datetime.date.today()) & Q(booked=False)))
                
 
         if instruments:
@@ -94,7 +94,7 @@ def searchEvents(request):
                 )
         if instruments != "":
             for instrument in instruments.iterator():
-                events |= Event.objects.filter((Q(description__icontains=instrument) | Q(instruments_needed__icontains=instrument)) & Q(occurring__gte=datetime.date.today()))
+                events |= Event.objects.filter((Q(description__icontains=instrument) | Q(instruments_needed__icontains=instrument)) & (Q(occurring__gte=datetime.date.today()) & Q(booked=False)))
         
       
 
@@ -179,7 +179,7 @@ def searchEvents(request):
         events = Event.objects.filter(
             (Q(topic__name__icontains=q) |
             Q(name__icontains=q) |
-            Q(description__icontains=q)) & Q(occurring__gte=datetime.date.today())
+            Q(description__icontains=q)) & (Q(occurring__gte=datetime.date.today() & Q(booked=False)))
         )
         event_messages = Message.objects.filter(Q(event__topic__name__icontains=q))
         now = datetime.date.today()
