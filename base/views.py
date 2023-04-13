@@ -817,10 +817,14 @@ def viewMusician(request, pk):
     genres = Skill.objects.filter(Q(owner=musician.user) & Q(primary=False))
     contractable = False
     user = request.user
-    if user.group:
-        events = Event.objects.filter(Q(host=user) & Q(booked=False))
-        if events.exists:
-            contractable = True
+    try:
+        if user.group.exists():
+            events = Event.objects.filter(Q(host=user) & Q(booked=False))
+            if events.exists:
+                 contractable = True
+    except:
+        contractable = False
+    
     context = {'musician': musician, 'contractable': contractable, 'primaryInstrument': primaryInstrument, 'instruments': instruments, 'primaryGenre': primaryGenre, 'genres': genres}
     return render(request, 'base/musician.html', context)
 
