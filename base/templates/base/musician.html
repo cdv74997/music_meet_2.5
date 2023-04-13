@@ -41,49 +41,50 @@
         <div class="profile">
           <div class="profile__avatar">
             <div class="avatar avatar--large active">
-              <img src="{{request.user.avatar.url}}" />
+              <img src="{{musician.user.avatar.url}}" />
             </div>
           </div>
           <div class="profile__info">
-            {% if user.account_type == "G" %}
-            <h3>{{user.group.group_name}}</h3>
-            <h2>Genre: {{user.group.genre}}</h2>
-
-            {% else %}
-            <h3>{{user.first_name}} {{user.last_name}}</h3>
+            
+            <h3>{{musician.user.first_name}} {{musician.user.last_name}}</h3>
+            
+            <p>@{{musician.user.username}}</p>
+            {% if request.user.group %}
+            <a class="btn btn--main" href="{% url 'create-contract' musician.id %}">
+              <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+                <title>add</title>
+                <path
+                  d="M16.943 0.943h-1.885v14.115h-14.115v1.885h14.115v14.115h1.885v-14.115h14.115v-1.885h-14.115v-14.115z"
+                ></path>
+              </svg> 
+              Send Contract Offer
+            </a>
             {% endif %}
-            <p>@{{user.username}}</p>
-            {% if user.account_type == "G" %}
+            
 
-            <a class="btn btn--pill edit-user-button" href="{% url 'update-group' user.group.id %}">Edit Group Profile</a>
-            {% endif %}
-
-            {% if request.user == user %}
-            <a href="{% url 'update-user' %}" class="btn btn--main btn--pill">Edit User Profile</a>
-            {% endif %}
+         
 
           </div>
           <div class="profile__about">
             <h3>About</h3>
             <p>
-              {{user.bio}}
+              {{musician.user.bio}}
             </p>
           </div>
-          <!-- If the current user is a musician, display their musician info -->
-          {% if user.account_type == "M" %}
+       
           <div class="profile__about">
             <h3>Instruments</h3>
-            <a class="tag tag--pill tag--sub settings__btn tag--lg" href="{% url 'add-instrument' %}"><i class="im im-plus"></i>Add Instrument</a>
+            <br>
+            <p>{{primaryInstrument}}</p>
+            <br>
             {% if instruments %}
             {% for instrument in instruments %}
             <p>
               {{instrument.name}}
             </p>
-            <a class="tag tag--pill tag--main settings__btn" href="{% url 'update-instrument' instrument.id %}"><i class="im im-edit"></i>Edit</a>
-            {% if not instrument.primary %}
-            <a class="tag tag--pill tag--main settings__btn" href="{% url 'delete-instrument' instrument.id %}?next=/account"><i class="im im-x-mark-circle-o"></i>Delete</a>
+
             
-            {% endif %}
+            
             <br>
             {% endfor %}
             {% endif %}
@@ -91,16 +92,16 @@
 
           <div class="profile__about">
             <h3>Genres</h3>
-            <a class="tag tag--pill tag--sub settings__btn tag--lg" href="{% url 'add-genre' %}"><i class="im im-plus"></i>Add Genre</a>
+            <br>
+            <p>{{primaryGenre}}</p>
+            <br>
             {% if genres %}
             {% for genre in genres %}
             <p>
               {{genre.name}}
             </p>
-            <a class="tag tag--pill tag--main settings__btn" href="{% url 'update-genre' genre.id %}"><i class="im im-edit"></i>Edit</a>
-            {% if not genre.primary %}
-            <a class="tag tag--pill tag--main settings__btn" href="{% url 'delete-genre' genre.id %}?next=/account"><i class="im im-x-mark-circle-o"></i>Delete</a>
-            {% endif %}
+            
+           
             
             {% endfor %}
             {% endif %}
@@ -109,35 +110,32 @@
           <div class="profile__about">
             <h3>Years of Experience</h3>
             <p>
-              {{user.musician.experience}}
+              {{musician.experience}}
             </p>
           </div>
 
           <div class="profile__about">
             <h3>Location</h3>
             <p>
-              {{user.musician.location}}
+              {{musician.location}}
             </p>
           </div>
 
           <div class="profile__about">
             <h3>Link to Demo</h3>
             <p>
-              {{user.musician.demo}}
+              {{musician.demo}}
             </p>
           </div>
-          {% endif %}
+          
         </div>
 
         <div class="profile__about">
           <h3>Events</h3>
-          
+          {% include 'base/feed_component.html' %}
         </div>
       </div>
-      <!-- Room List End -->
-
-      
-      <!-- Activities End -->
+      <
     </div>
   </main>
 {% endblock content %}

@@ -39,5 +39,6 @@ urlpatterns = [
     path('view-reviews/', views.viewReviews, name="view-reviews"),
     path('group-events/<str:pk>/', views.groupEventSearch, name='group-events'),
     path('create-contract/<str:pk>/', views.createContract, name='create-contract'),
-    path('review-contract/<str:pk>/', views.reviewContract, name='review-contract'), 
+    path('review-contract/<str:pk>/', views.reviewContract, name='review-contract'),
+    path('musician/<str:pk>/', views.viewMusician, name='view-musician'), 
 ]

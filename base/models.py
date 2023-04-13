@@ -45,6 +45,8 @@ class Event(models.Model):
     flier = models.ImageField(null=True, blank=True, default="flyer.png")
     instruments_needed = models.CharField(max_length=200, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
+    musicians_needed = models.PositiveIntegerField(default=1)
+    booked = models.BooleanField(default=False)
     # many to many relationship
     participants = models.ManyToManyField(User, related_name='participants', blank=True)
     occurring = models.DateField(null=True)

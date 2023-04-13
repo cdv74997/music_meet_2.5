@@ -7,8 +7,8 @@ from django.db.models import Q
 from django.contrib.auth import authenticate, login, logout
 from .utils import searchEvents, paginateEvents
 #from django.contrib.auth.forms import UserCreationForm
-from .models import Event, Topic, Message, Musician, Group, User, Review, Distances, Skill, InstrumentSkill
-from .forms import EventForm, UserForm, MusicianForm, GroupForm, MyUserCreationForm, GenresForm, InstrumentsForm, InboxMessageForm
+from .models import Event, Topic, Message, Musician, Group, User, Review, Distances, Skill, InstrumentSkill, InboxMessage
+from .forms import EventForm, UserForm, MusicianForm, GroupForm, MyUserCreationForm, GenresForm, InstrumentsForm, InboxMessageForm, ContractForm
 from django.core.exceptions import ObjectDoesNotExist
 import logging
 import datetime
@@ -403,6 +403,11 @@ def createEvent(request):
         if form.is_valid():
             event = form.save(commit=False)
             print(event.occurring)
+            musicians_needed = request.POST.get('musicians_needed')
+            if (musicians_needed == 0):
+                booked = True
+            else :
+                booked = False
             #Do not allow user to create event if the date has already passed 
             Event.objects.create(
                 host=request.user,
@@ -415,6 +420,8 @@ def createEvent(request):
                 description=request.POST.get('description'),
                 occurring=event.occurring,
                 location = request.POST.get('location'),
+                musicians_needed = musicians_needed,
+                booked = booked
         
             )
             return redirect('home')
@@ -464,6 +471,11 @@ def updateEvent(request, pk):
         
             event.topic = topic
             event.description = request.POST.get('description')
+            event.musicians_needed = request.POST.get('musicians_needed')
+            if (event.musicians_needed == 0):
+                event.booked = True
+            else:
+                event.booked = False
         
             event.save()
             return redirect('home')
@@ -794,6 +806,23 @@ def createContract(request, pk):
             messages.error(request, "Your contract returned an error!")
     context = {'events': events, 'formC': formC}
     return render(request, 'base/contract-create.html', context)
+
+def viewMusician(request, pk):
+    musician = Musician.objects.get(id=pk)
+    # We will only have one primary instrument
+    primaryInstrument = InstrumentSkill.objects.get(Q(owner=musician.user) & Q(primary=True))
+    # The complement of the set containing exclusively primary instrument
+    instruments = InstrumentSkill.objects.filter(Q(owner=musician.user) & Q(primary=False))
+    primaryGenre = Skill.objects.get(Q(owner=musician.user) & Q(primary=True))
+    genres = Skill.objects.filter(Q(owner=musician.user) & Q(primary=False))
+    contractable = False
+    user = request.user
+    if user.group:
+        events = Event.objects.filter(Q(host=user) & Q(booked=False))
+        if events.exists:
+            contractable = True
+    context = {'musician': musician, 'contractable': contractable, 'primaryInstrument': primaryInstrument, 'instruments': instruments, 'primaryGenre': primaryGenre, 'genres': genres}
+    return render(request, 'base/musician.html', context)
 
 @login_required(login_url="login")
 def reviewContract(request, pk):
