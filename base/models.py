@@ -4,6 +4,7 @@ from django import forms
 from django.core.validators import MaxValueValidator, MinValueValidator
 #from django.contrib.auth.models import User
 import uuid
+from embed_video.fields import EmbedVideoField
 
 
 ACCOUNT_TYPES = (
@@ -214,3 +215,15 @@ class Distances(models.Model):
 
     def __str__(self):
         return str(self.label)
+
+class Demo(models.Model):
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    title = models.CharField(max_length=100)
+    added = models.DateTimeField(auto_now_add=True)
+    url = EmbedVideoField()
+
+    def __str__(self):
+        return str(self.title)
+
+    class Meta:
+        ordering = ['-added']

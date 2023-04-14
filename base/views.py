@@ -7,7 +7,7 @@ from django.db.models import Q
 from django.contrib.auth import authenticate, login, logout
 from .utils import searchEvents, paginateEvents
 #from django.contrib.auth.forms import UserCreationForm
-from .models import Event, Topic, Message, Musician, Group, User, Review, Distances, Skill, InstrumentSkill, InboxMessage, Contract
+from .models import Event, Topic, Message, Musician, Group, User, Review, Distances, Skill, InstrumentSkill, InboxMessage, Contract, Demo
 from .forms import EventForm, UserForm, MusicianForm, GroupForm, MyUserCreationForm, GenresForm, InstrumentsForm, InboxMessageForm, ContractForm
 from django.core.exceptions import ObjectDoesNotExist
 import logging
@@ -809,6 +809,7 @@ def createContract(request, pk):
 
 def viewMusician(request, pk):
     musician = Musician.objects.get(id=pk)
+    demos = Demo.objects.filter(owner__id=musician.user.id)
     # We will only have one primary instrument
     primaryInstrument = InstrumentSkill.objects.get(Q(owner=musician.user) & Q(primary=True))
     # The complement of the set containing exclusively primary instrument
@@ -825,7 +826,7 @@ def viewMusician(request, pk):
     except:
         contractable = False
     
-    context = {'musician': musician, 'contractable': contractable, 'primaryInstrument': primaryInstrument, 'instruments': instruments, 'primaryGenre': primaryGenre, 'genres': genres}
+    context = {'musician': musician, 'contractable': contractable, 'primaryInstrument': primaryInstrument, 'instruments': instruments, 'primaryGenre': primaryGenre, 'genres': genres, 'demos': demos}
     return render(request, 'base/musician.html', context)
 
 

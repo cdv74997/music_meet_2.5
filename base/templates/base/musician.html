@@ -1,5 +1,5 @@
 {% extends 'main.html' %}
-
+{% load embed_video_tags %}
 {% block content %}
   <main class="profile-page layout layout--3">
     <div class="container">
@@ -122,11 +122,15 @@
           </div>
 
           <div class="profile__about">
-            <h3>Link to Demo</h3>
+            {% for demo in demos %}
+            <h3>{{demo.title}}</h3>
+            {% video demo.url '426x240' %}
             <p>
-              {{musician.demo}}
+              {{demo.url}}
             </p>
+            <p>Created on: {{demo.added}}</p>
           </div>
+          {% endfor %}
           
         </div>
 
