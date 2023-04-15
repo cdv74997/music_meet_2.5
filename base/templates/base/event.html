@@ -150,8 +150,8 @@
             <img src="{{user.avatar.url}}" />
           </div>
           <p>
-            {{user.username}}
-            <span>@{{user.username}}</span>
+            {{user.first_name}} {{user.last_name}}
+            <span>{{user.email}}</span>
           </p>
         </a>
         {% endfor %}
