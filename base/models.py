@@ -220,7 +220,8 @@ class Demo(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
     added = models.DateTimeField(auto_now_add=True)
-    url = EmbedVideoField()
+    
+    video=models.FileField(upload_to="video/%y")
 
     def __str__(self):
         return str(self.title)

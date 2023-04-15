@@ -36,6 +36,7 @@
               <!--<label for="Dropdown">Max Distance:</label> -->
 
               <form method="GET" action="{% url 'home' %}">
+                
                 <input type="submit" value="Filter Distance" onclick="getdistance()"/>
                 <input type = "hidden" id="distanceDisplay" name="distance"></input>
               <select name="distancetocalc" id="distance">
@@ -123,11 +124,11 @@
           
           {% if eventsearching %}
           {% include 'base/feed_component.html' %}
-          {% include 'pagination.html' with q=events custom_range=custom_range %}
+          {% include 'pagination.html' with q=events custom_range=custom_range distancetocalc=distancetocalc %}
           {% endif %}
           {% if groupeventsearching %}
           {% include 'base/gfeed_component.html' %}
-          {% include 'pagination.html' with q=eventsG custom_range=custom_range %}
+          {% include 'pagination.html' with q=eventsG custom_range=custom_range distance=distance %}
           {% endif %}
           {% if groupsearching %}
           {% include 'base/group_feed.html' %}

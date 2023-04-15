@@ -123,13 +123,17 @@
 
           <div class="profile__about">
             {% for demo in demos %}
-            <h3>{{demo.title}}</h3>
+            <!--<h3>{{demo.title}}</h3>
             {% video demo.url '426x240' %}
             <p>
               {{demo.url}}
             </p>
             <p>Created on: {{demo.added}}</p>
-          </div>
+          </div>-->
+          <h3 class="text-center mt-2 mb-2">{{demo.title}}</h3>
+          <video class="video-fluid" controls="controls">
+                 <source src="{{demo.video.url}}" type="video/mp4" />
+          </video>
           {% endfor %}
           
         </div>

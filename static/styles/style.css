@@ -1019,7 +1019,8 @@ a {
 .room__box {
   padding-left: 2rem;
   padding-right: 2rem;
-  height: 80.5vh;
+  
+  height: 152.5vh;
   /* overflow-y: auto; */
   padding-bottom: 0;
 }
@@ -1036,11 +1037,14 @@ a {
 
 .room__info {
   display: flex;
+  margin: auto;
   justify-content: space-between;
+  
 }
 
 .room__info h3 {
   font-size: 2.4rem;
+ 
   font-weight: 500;
   color: var(--color-main);
 }
@@ -1076,9 +1080,9 @@ a {
 }
 
 .room__conversation {
-  margin-top: 1rem;
-  margin-bottom: 4rem;
-  height: 64%;
+  margin-top: 2rem;
+  margin-bottom: 0rem;
+  height: 15%;
 }
 
 .threads h3 {
