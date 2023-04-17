@@ -757,21 +757,72 @@ def createContract(request, pk):
 def reviewContract(request, pk):
     contract = Contract.objects.get(contract_id=pk)
     context = {'contract': contract}
-    return render(request, 'base/review-contract.html', context)
+    return render(request, 'base/contract-review.html', context)
+
+@login_required(login_url="login")
+def rejectContract(request, pk):
+    contract = Contract.objects.get(contract_id=pk)
+    contract.delete()
+    return render(request, 'contract-deleted.html')
+
+@login_required(login_url="login")
+def acceptContract(request, pk):
+    contract = Contract.objects.get(contract_id=pk)
+    contract.accepted = True
+    # Decrement the musicians wanted from the event
+    event = contract.event
+
+    num = event.musicians_needed
+    if (num == 0):
+        messages.error(request, "This event is already booked! Offer no longer valid.")
+        contract.delete()
+        return redirect('home')
+    newnum = num - 1
+    event.musicians_needed = newnum
+    event.save()
+    subject = "Confirmation For Contract With " + contract.group.group_name + " For Venue " + contract.event.name
+    messagebodyEmail = "This email is to confirm that you, " + contract.musician.user.first_name + " " + contract.musician.user.last_name + " have agreed to perform with " + contract.group.group_name + " on the day of " + str(contract.event.occurring) + " at " + str(contract.start_time) + " until " + str(contract.end_time) + " for a rate of " + str(contract.pay) + " per hour.\n" + "The event will be held at " + contract.location + ".\n" + " Please make note of the terms in this binding agreement outlined here. " + contract.description
+    
+
+
+    send_mail(
+            subject,
+            messagebodyEmail,
+            settings.EMAIL_HOST_USER,
+            [contract.musician.user.email],
+            fail_silently=False,
+        )
+    context = {'contract': contract}
+    return render(request, 'base/contract-accept.html', context)
 
 @login_required(login_url="login")
 def createContract(request, pk):
     musician = Musician.objects.get(id=pk)
     user = request.user
-    events = Event.objects.filter(host=user)
+    eventsToStart = Event.objects.filter(Q(host=user) & Q(booked=False))
+    events = Event.objects.none()
+    for event in eventsToStart:
+        id = event.id
+        # Asks the question does a contract exist for this user
+        reject = Contract.objects.filter(Q(event__id=id) & Q(musician__id=musician.id))
+        print(not reject)
+        if not reject:
+            events |= Event.objects.filter(id=id)
     
     formC = ContractForm()
-    for field in formC:
-        print(field.label)
+
     
     if request.method == "POST":
         formC = ContractForm(request.POST)
+    
         eventC = request.POST.get('eventC')
+        reject = Contract.objects.filter(Q(event__name=eventC) & Q(musician__id=musician.id))
+        if not reject:
+            print("clear")
+        else:
+            messages.error(request, "You cannot send multiple contracts to a musician for the same event")
+            return redirect("home")
+
         #eventId = event.id
         eventsub = Event.objects.get(name=eventC)
         if formC.is_valid():

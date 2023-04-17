@@ -1,0 +1,25 @@
+{% extends 'main.html' %}
+{% block content %}
+
+<main class="formPage my-xl">
+    <div class="content-box">
+        <div class="formWrapper">
+            <h3>Offer To Perform With {{contract.group.group_name}} For {{contract.event.name}}</h3>
+            <br>
+            <p>Notes: {{contract.description}}</p>
+            <br>
+            <p>Starting time: {{contract.start_time}}</p>
+            <p>Ending time: {{contract.end_time}}</p>
+            <p>Pay Offer: ${{contract.pay}} per hour</p>
+            <br>
+            <p>Date Of Event: {{contract.event.occurring}}</p>
+           <br>
+           <a style="color: rgb(151, 231, 39);" href="{% url 'accept-contract' contract.contract_id %}">Accept Offer</a> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<a style="color: red;" href="{% url 'decline-contract' contract.contract_id %}">Decline Offer</a>
+          
+         
+
+          
+        </div>
+    </div>
+</main>
+{% endblock content %}

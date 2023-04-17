@@ -15,7 +15,7 @@ class MyUserCreationForm(UserCreationForm):
 class EventForm(forms.ModelForm):
     class Meta:
         model = Event
-        fields = ['location','name', 'flier', 'instruments_needed', 'description', 'occurring']
+        fields = ['location','name', 'flier', 'instruments_needed', 'description', 'occurring', 'musicians_needed']
         widgets = {
            'occurring' : forms.SelectDateWidget(),
            #'occurring': forms.DateInput()#forms.SelectDateWidget(), 

@@ -60,6 +60,7 @@ class Event(models.Model):
     class Meta:
         # this is default for main view but group view should order by occurring
         ordering = ['-updated', '-created']
+        unique_together = (('name', 'host'),)
 
     def __str__(self):
         return self.name
@@ -163,7 +164,7 @@ class Contract(models.Model):
     #unique id for each contract
     contract_id = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
 
-    description = models.TextField(max_length = 500)
+    description = models.TextField(max_length = 50000)
 
     start_time = models.CharField(max_length = 10, default='TBD')
     end_time = models.CharField(max_length = 10, default='TBD')
