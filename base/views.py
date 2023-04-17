@@ -779,7 +779,10 @@ def acceptContract(request, pk):
         return redirect('home')
     newnum = num - 1
     event.musicians_needed = newnum
+    if (newnum == 0):
+        event.booked = True
     event.save()
+    contract.save()
     subject = "Confirmation For Contract With " + contract.group.group_name + " For Venue " + contract.event.name
     messagebodyEmail = "This email is to confirm that you, " + contract.musician.user.first_name + " " + contract.musician.user.last_name + " have agreed to perform with " + contract.group.group_name + " on the day of " + str(contract.event.occurring) + " at " + str(contract.start_time) + " until " + str(contract.end_time) + " for a rate of " + str(contract.pay) + " per hour.\n" + "The event will be held at " + contract.location + ".\n" + " Please make note of the terms in this binding agreement outlined here. " + contract.description
     

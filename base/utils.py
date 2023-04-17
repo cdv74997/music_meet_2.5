@@ -179,7 +179,7 @@ def searchEvents(request):
         events = Event.objects.filter(
             (Q(topic__name__icontains=q) |
             Q(name__icontains=q) |
-            Q(description__icontains=q)) & (Q(occurring__gte=datetime.date.today()) & Q(booked=False))
+            Q(description__icontains=q)) & (Q(booked=False) & Q(occurring__gte=datetime.date.today()))
         )
         event_messages = Message.objects.filter(Q(event__topic__name__icontains=q))
         now = datetime.date.today()
