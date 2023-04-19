@@ -76,7 +76,7 @@
             <h3>Demos</h3>
             {% for demo in demos %}
             <h3 class="text-center mt-2 mb-2">{{demo.title}}</h3>
-            <video class="video-fluid" controls="controls">
+            <video class="video-fluid" controls="controls" style="width: 500px;">
                    <source src="{{demo.demovid.url}}" type="video/mp4" />
             </video>
             {% endfor %}
