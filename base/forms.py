@@ -23,6 +23,7 @@ class EventForm(forms.ModelForm):
             #'occurring': AdminDateWidget()
             #'time': forms.TimeInput(format='%H:%M'),
         }
+        labels = {'location': 'Zip Code'}
         # FixingEventForm 10_22_222
         #exclude = ['host', 'participants']
 
