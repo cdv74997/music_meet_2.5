@@ -71,6 +71,19 @@
           </div>
           <!-- If the current user is a musician, display their musician info -->
           {% if user.account_type == "M" %}
+          {% if demos %}
+          <div class="profile__about">
+            <h3>Demos</h3>
+            {% for demo in demos %}
+            <h3 class="text-center mt-2 mb-2">{{demo.title}}</h3>
+            <video class="video-fluid" controls="controls">
+                   <source src="{{demo.demovid.url}}" type="video/mp4" />
+            </video>
+            {% endfor %}
+          </div>
+          {% endif %}
+          <a class="tag tag--pill tag--sub settings__btn tag--lg" href="{% url 'add-demo' %}"><i class="im im-plus"></i>Add Demo</a>
+          <br>
           <div class="profile__about">
             <h3>Instruments</h3>
             <a class="tag tag--pill tag--sub settings__btn tag--lg" href="{% url 'add-instrument' %}"><i class="im im-plus"></i>Add Instrument</a>
@@ -120,12 +133,7 @@
             </p>
           </div>
 
-          <div class="profile__about">
-            <h3>Link to Demo</h3>
-            <p>
-              {{user.musician.demo}}
-            </p>
-          </div>
+          
           {% endif %}
         </div>
 

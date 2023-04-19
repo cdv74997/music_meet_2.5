@@ -43,5 +43,6 @@ urlpatterns = [
     path('accept-contract/<str:pk>/', views.acceptContract, name='accept-contract'),
     path('decline-contract/<str:pk>/', views.rejectContract, name='decline-contract'),
     path('musician/<str:pk>/', views.viewMusician, name='view-musician'), 
+    path('add-demo/', views.addDemo, name='add-demo'),
 
 ]

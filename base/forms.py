@@ -1,7 +1,7 @@
 from django.forms import ModelForm
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from .models import Event, Group, Musician, User, Skill, InstrumentSkill, InboxMessage, Contract
+from .models import Event, Group, Musician, User, Skill, InstrumentSkill, InboxMessage, Contract, Demo
 #from django.contrib.auth.models import User
 from django.contrib.admin.widgets import  AdminDateWidget, AdminTimeWidget, AdminSplitDateTime
 
@@ -85,10 +85,23 @@ class ContractForm(forms.ModelForm):
     class Meta:
         model = Contract
         fields = "__all__"
-        exclude = ['accepted', 'musician', 'group', 'event']
+        exclude = ['owner', 'added']
 
     def __init__(self, *args, **kwargs):
         super(ContractForm, self).__init__(*args, **kwargs)
+
+        for name, field in self.fields.items():
+            field.widget.attrs.update({'class': 'input'})
+
+
+class DemoForm(forms.ModelForm):
+    class Meta:
+        model = Demo
+        fields = "__all__"
+        exclude = ['owner', 'added']
+
+    def __init__(self, *args, **kwargs):
+        super(DemoForm, self).__init__(*args, **kwargs)
 
         for name, field in self.fields.items():
             field.widget.attrs.update({'class': 'input'})

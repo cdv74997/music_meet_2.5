@@ -222,8 +222,8 @@ class Demo(models.Model):
     title = models.CharField(max_length=100)
     added = models.DateTimeField(auto_now_add=True)
     
-    video=models.FileField(upload_to="video/%y")
-
+    #video=models.FileField(upload_to="video/%y")
+    demovid=models.FileField(upload_to="video/%y")
     def __str__(self):
         return str(self.title)
 

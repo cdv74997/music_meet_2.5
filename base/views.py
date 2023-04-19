@@ -8,7 +8,7 @@ from django.contrib.auth import authenticate, login, logout
 from .utils import searchEvents, paginateEvents
 #from django.contrib.auth.forms import UserCreationForm
 from .models import Event, Topic, Message, Musician, Group, User, Review, Distances, Skill, InstrumentSkill, InboxMessage, Contract, Demo
-from .forms import EventForm, UserForm, MusicianForm, GroupForm, MyUserCreationForm, GenresForm, InstrumentsForm, InboxMessageForm, ContractForm
+from .forms import EventForm, UserForm, MusicianForm, GroupForm, MyUserCreationForm, GenresForm, InstrumentsForm, InboxMessageForm, ContractForm, DemoForm
 from django.core.exceptions import ObjectDoesNotExist
 import logging
 import datetime
@@ -376,8 +376,16 @@ def updateMusician(request, pk):
 
     if request.method == 'POST':
         
-        musician.primaryinstrument = request.POST.get('primaryinstrument')
-        musician.genres = request.POST.get('genres')
+        primaryinstrument = request.POST.get('primaryinstrument')
+        primarygenre = request.POST.get('primarygenre')
+        instrument = InstrumentSkill.objects.get(Q(owner=request.user) & Q(primary=True))
+        instrument.name = primaryinstrument
+        instrument.save()
+        genre = Skill.objects.get(Q(owner=request.user) & Q(primary=True))
+        genre.name = primarygenre
+        genre.save()
+        musician.primaryinstrument = primaryinstrument
+        musician.primarygenre = primarygenre
         musician.experience = request.POST.get('experience')
         musician.location = request.POST.get('location')
         musician.demo = request.POST.get('demo')
@@ -534,6 +542,8 @@ def updateUser(request):
         if form.is_valid():
             form.save()
             return redirect('user-profile', pk=user.id)
+        else:
+            messages.error(request, 'form not valid')
     
     context = {'form': form, 'musician': musician, 'group': group}
     return render(request, 'base/update_user.html', context)
@@ -552,8 +562,9 @@ def userAccount(request):
     user = request.user
     genres = user.skill_set.all()
     instruments = user.instrumentskill_set.all()
+    demos = user.demo_set.all()
 
-    context = {'user': user, 'genres': genres, 'instruments': instruments}
+    context = {'user': user, 'genres': genres, 'instruments': instruments, 'demos': demos}
     return render(request, 'base/account.html', context)
 
 @login_required(login_url='login')
@@ -615,6 +626,32 @@ def deleteGenre(request, pk):
         return redirect('account')
     context = {'obj': genre}
     return render(request, 'base/delete.html', context)
+
+@login_required(login_url='login')
+def addDemo(request):
+    user = request.user
+    form = DemoForm()
+
+    if request.method == 'POST':
+        form = DemoForm(request.POST, request.FILES)
+        title=request.POST.get('title')
+
+        demovid=request.FILES.get('demovid')
+        print(title)
+        if form.is_valid():
+            demo = form.save(commit=False)
+            Demo.objects.create(
+                owner=user,
+                title=title,
+                demovid=demovid,
+            )
+            messages.success(request, 'Demo was added successfully!')
+            return redirect('account')
+        
+            
+
+    context = {'form': form}
+    return render(request, 'base/demo.html', context)
 
 
 @login_required(login_url='login')
