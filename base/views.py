@@ -402,51 +402,37 @@ def createEvent(request):
     topics = Topic.objects.all()
     if request.method == 'POST':
         form = EventForm(request.POST, request.FILES)
-        #topic_name = Topic.objects.get(id=request.POST.get('topic'))
         topic_name = group.genre
-        #topic_name = request.POST.get('topic')
         topic, created = Topic.objects.get_or_create(name=topic_name)
-        #event=form.save(commit=False)
-        #occurring = form['occurring']
         if form.is_valid():
             event = form.save(commit=False)
             print(event.occurring)
-            musicians_needed = request.POST.get('musicians_needed')
-            if (musicians_needed == 0):
-                booked = True
-            else :
-                booked = False
+
+            #If the event has not passed already it will create the event 
+            if(event.occurring >= datetime.date.today()):
+                print('Date has not passed yet');
+                #Create the event 
+                Event.objects.create(
+                    host=request.user,
+                    topic=topic,
+                    name=request.POST.get('name'),
+                    instruments_needed=request.POST.get('instruments_needed'),
+                    flier=request.FILES.get('flier'),
+                    description=request.POST.get('description'),
+                    occurring=event.occurring,
+                    location = request.POST.get('location'),
+            
+                )
+                return redirect('home')
+            #If the date has already passed it will not create the event 
+            else:
+                print('Date has already passed');
+                messages.error(request,"Enter a date that has not passed");
             #Do not allow user to create event if the date has already passed 
-            Event.objects.create(
-                host=request.user,
-                topic=topic,
-            #occurring=occurring,
-            #time=request.POST.get('time'),
-                name=request.POST.get('name'),
-                instruments_needed=request.POST.get('instruments_needed'),
-                flier=request.FILES.get('flier'),
-                description=request.POST.get('description'),
-                occurring=event.occurring,
-                location = request.POST.get('location'),
-                musicians_needed = musicians_needed,
-                booked = booked
-        
-            )
-            return redirect('home')
-        
-        
-        
-        
-        
-       # form = EventForm(request.POST)
-        #if form.is_valid():
-            # Step 2 in FixingEventForm 10_22_22
-            #event = form.save(commit=False)
-            #event.host = request.user
-            #event.save()
         
     context = {'form': form, 'topics': topics}
     return render(request, 'base/event_form.html', context)
+
 
 @login_required(login_url='login')
 def updateEvent(request, pk):
