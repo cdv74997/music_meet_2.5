@@ -120,7 +120,7 @@ class UserMusicianForm(forms.ModelForm):
         password = cleaned_data.get('password')
         confirm_password = cleaned_data.get('confirm_password')
         if password and confirm_password and password != confirm_password:
-            raise forms.ValidationError("Passwords do not match.")
+            self.add_error("confirm_password","Passwords Do Not Match!")
         return cleaned_data
 
 class UserGroupForm(forms.ModelForm):
@@ -135,7 +135,7 @@ class UserGroupForm(forms.ModelForm):
         password = cleaned_data.get('password')
         confirm_password = cleaned_data.get('confirm_password')
         if password and confirm_password and password != confirm_password:
-            raise forms.ValidationError("Passwords do not match.")
+            self.add_error("confirm_password","Passwords Do Not Match!")
         return cleaned_data
 
 class AccountTypeForm(forms.ModelForm):
