@@ -12,9 +12,12 @@ ACCOUNT_TYPES = (
     ('G', 'Group'),
 )
 
+
+
+
 class User(AbstractUser):
     
-    username = models.CharField(unique=True, max_length=100, null=False)
+    username = models.CharField(max_length=200, blank=True, null=True)
     first_name = models.CharField(max_length=200, null=True)
     last_name = models.CharField(max_length=200, null=True)
     account_type = models.CharField(default='M', max_length = 10, choices = ACCOUNT_TYPES)
@@ -26,6 +29,7 @@ class User(AbstractUser):
 
     avatar = models.ImageField(null=True, default="avatar.svg")
     id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False)
+    
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username'] 
 
@@ -130,7 +134,7 @@ class Musician(models.Model):
     location = models.CharField(max_length = 50)
 
     #demo, url field, max lenght of 200, will be a url to the demo?
-    demo = models.URLField(max_length = 200, null = True, blank = True)
+
     id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False)
     def __str__(self):
         return str(self.user.first_name + " " + self.user.last_name)
@@ -187,6 +191,12 @@ class InboxMessage(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False)
 
+    def __str__(self):
+        return f"From: {self.sender} To: {self.recipient} at {self.created}"
+
+    class Meta:
+        ordering = ['-created']
+
  
 
 class Review(models.Model):
@@ -229,3 +239,69 @@ class Demo(models.Model):
 
     class Meta:
         ordering = ['-added']
+
+class UserMusician(models.Model):
+    
+    
+    first_name = models.CharField(max_length=200, null=True)
+    last_name = models.CharField(max_length=200, null=True)
+    username = models.CharField(max_length=200, blank=True, null=True)
+    account_type = models.CharField(default='M', max_length = 10, choices = ACCOUNT_TYPES)
+    #musician_Account = models.BooleanField(default=False, null=True)
+    #group_Account = models.BooleanField(default=False, null=True)
+    email = models.EmailField(unique=True, null=True)
+    
+    bio = models.TextField(null=True)
+
+    avatar = models.ImageField(null=True, default="avatar.svg")
+    id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
+    # instruments, charfield, max length of 200
+    primaryinstrument = models.CharField(max_length = 200, null=True, blank=True)
+
+    primarygenre = models.CharField(max_length = 200, null=True, blank=True)
+
+    instruments = models.ManyToManyField(InstrumentSkill, blank=True)
+
+    # genres, charfield, max length of 200
+    genres = models.ManyToManyField(Skill, blank=True)
+
+    # experience, floatfield, no max length?
+    experience = models.CharField(default='One Year',max_length = 19, choices = experience_choices)
+
+    #location, charField, max length of 50
+    location = models.CharField(max_length = 50)
+
+    #demo, url field, max lenght of 200, will be a url to the demo?
+    
+    musician_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+
+class UserGroup(models.Model):
+    
+    
+    first_name = models.CharField(max_length=200, null=True)
+    last_name = models.CharField(max_length=200, null=True)
+    username = models.CharField(max_length=200, blank=True, null=True)
+    account_type = models.CharField(default='M', max_length = 10, choices = ACCOUNT_TYPES)
+    #musician_Account = models.BooleanField(default=False, null=True)
+    #group_Account = models.BooleanField(default=False, null=True)
+    email = models.EmailField(unique=True, null=True)
+    
+    bio = models.TextField(null=True)
+
+    avatar = models.ImageField(null=True, default="avatar.svg")
+    id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
+    #group name, charfield, max length of 60
+    group_name = models.CharField(max_length = 60)
+
+    #genre, charfield, max length of 30
+    genre = models.CharField(max_length = 30)
+
+    #location, charfield, max length of 30
+    location = models.CharField(max_length = 30)
+
+    featured_image = models.ImageField(null=True, default="avatar.svg")
+    group_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+
+    

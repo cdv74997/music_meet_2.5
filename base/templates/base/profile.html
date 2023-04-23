@@ -52,7 +52,7 @@
             {% else %}
             <h3>{{user.first_name}} {{user.last_name}}</h3>
             {% endif %}
-            <p>@{{user.username}}</p>
+            <p>@{{user.email}}</p>
             {% if user.account_type == "G" %}
             
             <a class="btn btn--pill edit-user-button" href="{% url 'update-group' user.group.id %}">Edit Group Profile</a>

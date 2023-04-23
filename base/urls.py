@@ -4,7 +4,9 @@ from . import views
 urlpatterns = [
     path('login/', views.loginPage, name="login"),
     path('logout/', views.logoutUser, name="logout"),
-    path('register/', views.registerPage, name="register"),
+    path('register/', views.accountType, name="register"),
+    path('register-musician', views.registerMusician, name='musician_info_form'),
+    path('register-group', views.registerGroup, name='group_info_form'),
 
     path('', views.home, name="home"),
     path('event/<str:pk>/', views.event, name="event"),

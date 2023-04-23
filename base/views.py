@@ -1,14 +1,16 @@
 from django.shortcuts import render, redirect
+from django.contrib.auth.hashers import make_password
 from django.http import HttpResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from formtools.wizard.views import SessionWizardView
 from django.db.models import Q
 #from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from .utils import searchEvents, paginateEvents
 #from django.contrib.auth.forms import UserCreationForm
 from .models import Event, Topic, Message, Musician, Group, User, Review, Distances, Skill, InstrumentSkill, InboxMessage, Contract, Demo
-from .forms import EventForm, UserForm, MusicianForm, GroupForm, MyUserCreationForm, GenresForm, InstrumentsForm, InboxMessageForm, ContractForm, DemoForm
+from .forms import EventForm, UserForm, MusicianForm, GroupForm, MyUserCreationForm, GenresForm, InstrumentsForm, InboxMessageForm, ContractForm, DemoForm, AccountTypeForm, UserMusicianForm, UserGroupForm
 from django.core.exceptions import ObjectDoesNotExist
 import logging
 import datetime
@@ -17,9 +19,113 @@ from django.conf import settings
 
 
 logger = logging.getLogger('django')
+def accountType(request): 
+    if request.method == 'POST':
+        form_type = request.POST.get('form_type')
+        print(form_type)
+        if form_type == 'musician_info':
+            return redirect('musician_info_form')
+        elif form_type == 'group_info':
+            return redirect('group_info_form')
+    else:
+        return render(request, 'base/account_type.html')
+
+
+def registerMusician(request):
+    form = UserMusicianForm()
+    if request.method == 'POST':
+        form = UserMusicianForm(request.POST)
+        if form.is_valid():
+
+            user=User.objects.create(
+                email=form.cleaned_data['email'],
+                password=make_password(form.cleaned_data['password']),
+                first_name=form.cleaned_data['first_name'],
+                last_name=form.cleaned_data['last_name'],
+                account_type="M"
+            )
+            musician=Musician.objects.create(
+                user=user,
+                primaryinstrument=form.cleaned_data['primaryinstrument'],
+                primarygenre=form.cleaned_data['primarygenre'],
+                experience=form.cleaned_data['experience'],
+                location=form.cleaned_data['location'],
+
+            )
+
+            messages.success(request, 'Thank you for signing up! Please sign in')
+            return redirect('login')
+        else:
+            messages.error(request, 'An error occurred during registration')
+
+    return render(request, 'base/musician_register.html', {'form': form})
+
+def registerGroup(request):
+    form = UserGroupForm()
+    if request.method == 'POST':
+        form = UserGroupForm(request.POST)
+        if form.is_valid():
+
+            user=User.objects.create(
+                email=form.cleaned_data['email'],
+                password=make_password(form.cleaned_data['password']),
+                first_name=form.cleaned_data['first_name'],
+                last_name=form.cleaned_data['last_name'],
+                account_type="G"
+            )
+            group=Group.objects.create(
+                user=user,
+                group_name=form.cleaned_data['group_name'],
+                genre=form.cleaned_data['genre'],
+                location=form.cleaned_data['location'],
+
+            )
+
+            messages.success(request, 'Thank you for signing up! Please sign in')
+            return redirect('login')
+        else:
+            messages.error(request, 'An error occurred during registration')
+
+    return render(request, 'base/group_register.html', {'form': form})
+
+
+
 
 # Create your views here.
+TEMPLATES = {
+    'account_type': 'account_type.html',
+    'musician_info': 'musician_info.html',
+    'group_info': 'group_info.html',
+}
 
+FORMS = [
+    ('account_type', AccountTypeForm),
+    ('musician_info', UserMusicianForm),
+    ('group_info', UserGroupForm),
+]
+
+def register_wizard_view(request):
+    wizard_view = SessionWizardView.as_view(FORMS, template_name=TEMPLATES)
+    return wizard_view(request)
+
+def get_form_instance(wizard, step):
+    if step == 'musician_info':
+        return Musician(user=wizard.get_cleaned_data_for_step('account_type')['user'])
+    if step == 'group_info':
+        return Group(user=wizard.get_cleaned_data_for_step('account_type')['user'])
+    return super(SessionWizardView, wizard).get_form_instance(step)
+
+def done(wizard, form_list, **kwargs):
+    user = form_list[0].save()
+    if user.account_type == 'M':
+        musician_info = form_list[1].save(commit=False)
+        musician_info.user = user
+        musician_info.save()
+    else: 
+        group_info = form_list[2].save(commit=False)
+        group_info.user = user
+        group_info.save()
+    return redirect('home')
 #events = [
 #   {'id':1, 'name':'Banda Fest'},
 #   {'id':2, 'name':'Quincenera en Los Angeles'},
@@ -161,18 +267,19 @@ def groupEventSearch(request, pk):
     return render(request, 'base/home.html', context)
 
 
-
+@login_required(login_url="login")
 def home(request):
     distanceChoices = Distances.objects.all()
     
     events, topics, event_count, event_messages, message_dict, q, now, distance = searchEvents(request)
     custom_range, events, paginator = paginateEvents(request, events, 2)
+    unread_messages = InboxMessage.objects.filter(recipient=request.user, is_read=False)
     eventsearching = "yes"
     
     
     
     # Create an object containing the groups object, musicians object, etc.:
-    context = {'events': events, 'topics': topics,
+    context = {'events': events, 'topics': topics, 'unread_count': unread_messages.count(),
      'event_count': event_count, 'event_messages': event_messages, 'message_dict': message_dict,
      'q': q, 'paginator': paginator, 'custom_range': custom_range, 'eventsearching': eventsearching, 'now': now, 'distance': distance,'distanceChoices': distanceChoices}
 

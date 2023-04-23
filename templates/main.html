@@ -40,6 +40,15 @@
     {% endblock %}
     <script src="{% static 'js/script.js' %}"></script>
     <script type="text/Javascript">
+      $(document).ready(function() {
+        $('#distance').change(function() {
+            if ($(this).val() == 'none') {
+              $('#distbutton').prop('disabled', true);
+            } else {
+              $('#distbutton').prop('disabled', false);
+            }
+          });
+        });
       function getdistance() {
           displaydistance = document.querySelector("#distance")
           ans = displaydistance.options[displaydistance.selectedIndex].value;

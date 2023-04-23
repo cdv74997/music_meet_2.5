@@ -1,7 +1,7 @@
 from django.forms import ModelForm
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from .models import Event, Group, Musician, User, Skill, InstrumentSkill, InboxMessage, Contract, Demo
+from .models import Event, Group, Musician, User, Skill, InstrumentSkill, InboxMessage, Contract, Demo, UserMusician, UserGroup
 #from django.contrib.auth.models import User
 from django.contrib.admin.widgets import  AdminDateWidget, AdminTimeWidget, AdminSplitDateTime
 
@@ -10,7 +10,7 @@ class MyUserCreationForm(UserCreationForm):
     
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'account_type', 'username', 'email', 'password1', 'password2']
+        fields = ['first_name', 'last_name', 'username', 'email', 'password1']
 
 class EventForm(forms.ModelForm):
     class Meta:
@@ -106,3 +106,40 @@ class DemoForm(forms.ModelForm):
 
         for name, field in self.fields.items():
             field.widget.attrs.update({'class': 'input'})
+
+
+class UserMusicianForm(forms.ModelForm):
+    password = forms.CharField(label='Password', widget=forms.PasswordInput)
+    confirm_password = forms.CharField(label='Confirm Password', widget=forms.PasswordInput)
+    class Meta:
+        model = UserMusician
+        fields = '__all__'
+        exclude = ['id', 'musician_id', 'user', 'avatar', 'bio', 'instruments', 'genres', 'account_type']
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get('password')
+        confirm_password = cleaned_data.get('confirm_password')
+        if password and confirm_password and password != confirm_password:
+            raise forms.ValidationError("Passwords do not match.")
+        return cleaned_data
+
+class UserGroupForm(forms.ModelForm):
+    password = forms.CharField(label='Password', widget=forms.PasswordInput)
+    confirm_password = forms.CharField(label='Confirm Password', widget=forms.PasswordInput)
+    class Meta:
+        model = UserGroup
+        fields = '__all__'
+        exclude = ['id', 'group_id', 'user', 'avatar', 'bio', 'account_type', 'featured_image']
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get('password')
+        confirm_password = cleaned_data.get('confirm_password')
+        if password and confirm_password and password != confirm_password:
+            raise forms.ValidationError("Passwords do not match.")
+        return cleaned_data
+
+class AccountTypeForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['account_type']
+
