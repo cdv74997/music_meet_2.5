@@ -28,9 +28,9 @@
     
 
     {% if messages %}
-    <u1 class="messages">
+    <u1 class="messages" id="message-container">
         {% for message in messages %}
-        <li>{{ message }}</li>
+        <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
         {% endfor %} 
     </u1>
     {% endif %}
@@ -110,6 +110,7 @@
         handleSelect(event.target.id)
       }))
       
+            
     </script>
     
   </body>

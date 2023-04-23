@@ -1275,7 +1275,12 @@ div {
   font-weight: 900;
   font-size: 6rem;
 }
-
+.success {
+  color: lime;
+}
+.error {
+  color: red;
+}
 /* Edit User */
 
 .edit-user-button{
@@ -1353,7 +1358,7 @@ div {
 .messages {
     list-style: none;
     background: var(--color-white);
-    padding: 0.5rem 3rem;
+    text-align: center;
     border: 2px solid var(--color-light);
     border-radius: 0.7rem;
 }

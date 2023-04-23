@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.db import IntegrityError
 from django.contrib.auth.hashers import make_password
 from django.http import HttpResponse
 from django.contrib import messages
@@ -36,25 +37,32 @@ def registerMusician(request):
     if request.method == 'POST':
         form = UserMusicianForm(request.POST)
         if form.is_valid():
-
-            user=User.objects.create(
-                email=form.cleaned_data['email'],
-                password=make_password(form.cleaned_data['password']),
-                first_name=form.cleaned_data['first_name'],
-                last_name=form.cleaned_data['last_name'],
-                account_type="M"
-            )
-            musician=Musician.objects.create(
-                user=user,
-                primaryinstrument=form.cleaned_data['primaryinstrument'],
-                primarygenre=form.cleaned_data['primarygenre'],
-                experience=form.cleaned_data['experience'],
-                location=form.cleaned_data['location'],
-
-            )
-
-            messages.success(request, 'Thank you for signing up! Please sign in')
-            return redirect('login')
+            try:
+                user=User.objects.create(
+                    email=form.cleaned_data['email'],
+                    password=make_password(form.cleaned_data['password']),
+                    first_name=form.cleaned_data['first_name'],
+                    last_name=form.cleaned_data['last_name'],
+                    account_type="M"
+                )
+                musician=Musician.objects.create(
+                    user=user,
+                    primaryinstrument=form.cleaned_data['primaryinstrument'],
+                    primarygenre=form.cleaned_data['primarygenre'],
+                    experience=form.cleaned_data['experience'],
+                    location=form.cleaned_data['location'],
+    
+                )
+    
+                messages.success(request, 'Thank you for registering! Please sign in.')
+                return redirect('login')
+            except IntegrityError as e:
+                if 'email' in str(e):
+                    form.add_error('email', 'This email is already registered.')
+                elif 'username' in str(e):
+                    form.add_error('username', 'This username is already taken.')
+                else:
+                    messages.error(request, 'An error occurred during registration')
         else:
             messages.error(request, 'An error occurred during registration')
 
@@ -66,23 +74,31 @@ def registerGroup(request):
         form = UserGroupForm(request.POST)
         if form.is_valid():
 
-            user=User.objects.create(
-                email=form.cleaned_data['email'],
-                password=make_password(form.cleaned_data['password']),
-                first_name=form.cleaned_data['first_name'],
-                last_name=form.cleaned_data['last_name'],
-                account_type="G"
-            )
-            group=Group.objects.create(
-                user=user,
-                group_name=form.cleaned_data['group_name'],
-                genre=form.cleaned_data['genre'],
-                location=form.cleaned_data['location'],
-
-            )
-
-            messages.success(request, 'Thank you for signing up! Please sign in')
-            return redirect('login')
+            try:
+                user=User.objects.create(
+                    email=form.cleaned_data['email'],
+                    password=make_password(form.cleaned_data['password']),
+                    first_name=form.cleaned_data['first_name'],
+                    last_name=form.cleaned_data['last_name'],
+                    account_type="G"
+                )
+                group=Group.objects.create(
+                    user=user,
+                    group_name=form.cleaned_data['group_name'],
+                    genre=form.cleaned_data['genre'],
+                    location=form.cleaned_data['location'],
+    
+                )
+    
+                messages.success(request, 'Thank you for registering! Please sign in.')
+                return redirect('login')
+            except IntegrityError as e:
+                if 'email' in str(e):
+                    form.add_error('email', 'This email is already registered.')
+                elif 'username' in str(e):
+                    form.add_error('username', 'This username is already taken.')
+                else:
+                    messages.error(request, 'An error occurred during registration')
         else:
             messages.error(request, 'An error occurred during registration')
 
