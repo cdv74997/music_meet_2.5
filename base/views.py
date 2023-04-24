@@ -53,6 +53,16 @@ def registerMusician(request):
                     location=form.cleaned_data['location'],
     
                 )
+                subject = "Welcome to MusicMeet"
+                message = "We are glad that you came here to find your music.\nSincerely,\nThe Music Meet Team."
+                messages.success(request, 'Thank you for registering! Please sign in.')
+                send_mail(
+                    subject,
+                    message,
+                    settings.EMAIL_HOST_USER,
+                    [user.email],
+                    fail_silently=False,
+                )
     
                 messages.success(request, 'Thank you for registering! Please sign in.')
                 return redirect('login')
@@ -75,6 +85,7 @@ def registerGroup(request):
         if form.is_valid():
 
             try:
+                group_name = form.cleaned_data['group_name']
                 user=User.objects.create(
                     email=form.cleaned_data['email'],
                     password=make_password(form.cleaned_data['password']),
@@ -89,8 +100,16 @@ def registerGroup(request):
                     location=form.cleaned_data['location'],
     
                 )
-    
+                subject = "Welcome to MusicMeet"
+                message = "We are glad that your group " + group_name + " came here to find your talent.\nSincerely,\nThe Music Meet Team."
                 messages.success(request, 'Thank you for registering! Please sign in.')
+                send_mail(
+                    subject,
+                    message,
+                    settings.EMAIL_HOST_USER,
+                    [user.email],
+                    fail_silently=False,
+                )
                 return redirect('login')
             except IntegrityError as e:
                 if 'email' in str(e):
@@ -855,100 +874,7 @@ def viewReviews(request):
 def createContract(request, pk):
     musician = Musician.objects.get(id=pk)
     user = request.user
-    events = Event.objects.filter(host=user)
-    
-    formC = ContractForm()
-    for field in formC:
-        print(field.label)
-    
-    if request.method == "POST":
-        formC = ContractForm(request.POST)
-        eventC = request.POST.get('eventC')
-        #eventId = event.id
-        eventsub = Event.objects.get(name=eventC)
-        if formC.is_valid():
-            contract = formC.save(commit=False)
-            contract.musician = musician
-            contract.group = user.group
-            contract.event = eventsub
-            contract.save()
-            messagebody = "Hello, " + str(musician) + " you have a new contract offer from " + str(user.group) + ".\n" + "Please respond via the button below."
-            messagebodyEmail = "Hello, " + str(musician) + " you have a new contract offer from " + str(user.group) + ".\n" + "Please respond by viewing your inbox."
-            subject = "Music Meet Contract Offer"
-            InboxMessage.objects.create(
-                sender=user,
-                recipient=musician.user,
-                name=user.first_name + " " + user.last_name,
-                subject = subject,
-                body = messagebody,
-                contract_related = True,
-                contract_id = contract.contract_id,
-
-            )
-            send_mail(
-            subject,
-            messagebodyEmail,
-            settings.EMAIL_HOST_USER,
-            [musician.user.email],
-            fail_silently=False,
-        )
-            messages.success(request, 'Your contract was sent successfully')
-            return redirect('home')
-        else:
-            messages.error(request, "Your contract returned an error!")
-    context = {'events': events, 'formC': formC}
-    return render(request, 'base/contract-create.html', context)
-
-@login_required(login_url="login")
-def reviewContract(request, pk):
-    contract = Contract.objects.get(contract_id=pk)
-    context = {'contract': contract}
-    return render(request, 'base/contract-review.html', context)
-
-@login_required(login_url="login")
-def rejectContract(request, pk):
-    contract = Contract.objects.get(contract_id=pk)
-    contract.delete()
-    return render(request, 'contract-deleted.html')
-
-@login_required(login_url="login")
-def acceptContract(request, pk):
-    contract = Contract.objects.get(contract_id=pk)
-    contract.accepted = True
-    # Decrement the musicians wanted from the event
-    event = contract.event
-
-    num = event.musicians_needed
-    if (num == 0):
-        messages.error(request, "This event is already booked! Offer no longer valid.")
-        contract.delete()
-        return redirect('home')
-    newnum = num - 1
-    event.musicians_needed = newnum
-    if (newnum == 0):
-        event.booked = True
-    event.save()
-    contract.save()
-    subject = "Confirmation For Contract With " + contract.group.group_name + " For Venue " + contract.event.name
-    messagebodyEmail = "This email is to confirm that you, " + contract.musician.user.first_name + " " + contract.musician.user.last_name + " have agreed to perform with " + contract.group.group_name + " on the day of " + str(contract.event.occurring) + " at " + str(contract.start_time) + " until " + str(contract.end_time) + " for a rate of " + str(contract.pay) + " per hour.\n" + "The event will be held at " + contract.location + ".\n" + " Please make note of the terms in this binding agreement outlined here. " + contract.description
-    
-
-
-    send_mail(
-            subject,
-            messagebodyEmail,
-            settings.EMAIL_HOST_USER,
-            [contract.musician.user.email],
-            fail_silently=False,
-        )
-    context = {'contract': contract}
-    return render(request, 'base/contract-accept.html', context)
-
-@login_required(login_url="login")
-def createContract(request, pk):
-    musician = Musician.objects.get(id=pk)
-    user = request.user
-    eventsToStart = Event.objects.filter(Q(host=user) & Q(booked=False))
+    eventsToStart = Event.objects.filter(Q(host=user) & Q(musicians_needed__gte=1))
     events = Event.objects.none()
     for event in eventsToStart:
         id = event.id
@@ -980,11 +906,15 @@ def createContract(request, pk):
             contract.group = user.group
             contract.event = eventsub
             contract.save()
-            messagebody = "Hello, " + str(musician) + " you have a new contract offer from " + str(user.group) + ".\n" + "Please respond via the button below."
-            messagebodyEmail = "Hello, " + str(musician) + " you have a new contract offer from " + str(user.group) + ".\n" + "Please respond by viewing your inbox."
-            subject = "Music Meet Contract Offer"
+            messagebody = "Hello, " + str(musician) + " you have a new contract offer from " + str(user.group) + ".\n" + "Please respond fill out your response here. Thank you.\n" + "Sincerely,\n" + "The MusicMeet Team"
+            messagebodyEmail = "Hello, " + str(musician) + " you have a new contract offer from " + str(user.group) + ".\n" + "Please respond by viewing the notification for this offer in your inbox in the app. Thank you.\n" + "Sincerely,\n" + "The MusicMeet Team"
+            subject = "Music Meet Contract Offer. Offer ID: " + str(contract.contract_id)
+            sysUser = User.objects.get(username='MusicMeet')
+            groupmessageSubject = "Music Meet Offer Sent. Offer ID: " + str(contract.contract_id)
+            groupmessagebody = "Hello, " + str(user) + " this message confirms that you have sent " + str(musician) + " a contract offer to perform as a " + str(contract.instrument) + " for the venue " + str(contract.event.name) + "\nPlease allow some time for a response. Thank you.\n" + "Sincerely,\n" + "The MusicMeet Team"
+            groupmessagebodyemail = "Hello, " + str(user) + " this email confirms that you have sent " + str(musician) + " a contract offer to perform as a " + str(contract.instrument) + " for the venue " + str(contract.event.name) + "\nPlease allow some time for a response. Thank you.\n" + "Sincerely,\n" + "The MusicMeet Team"
             InboxMessage.objects.create(
-                sender=user,
+                sender=sysUser,
                 recipient=musician.user,
                 name=user.first_name + " " + user.last_name,
                 subject = subject,
@@ -993,19 +923,149 @@ def createContract(request, pk):
                 contract_id = contract.contract_id,
 
             )
+            InboxMessage.objects.create(
+                sender=sysUser,
+                recipient=user,
+                name=user.first_name + " " + user.last_name,
+                subject = groupmessageSubject,
+                body = groupmessagebody,
+                contract_related = True,
+                contract_id = contract.contract_id,
+
+            )
             send_mail(
-            subject,
-            messagebodyEmail,
-            settings.EMAIL_HOST_USER,
-            [musician.user.email],
-            fail_silently=False,
-        )
+                subject,
+                messagebodyEmail,
+                settings.EMAIL_HOST_USER,
+                [musician.user.email],
+                fail_silently=False,
+            )
+            send_mail(
+                groupmessageSubject,
+                groupmessagebodyemail,
+                settings.EMAIL_HOST_USER,
+                [user.email],
+                fail_silently=False,
+            )
             messages.success(request, 'Your contract was sent successfully')
             return redirect('home')
         else:
             messages.error(request, "Your contract returned an error!")
     context = {'events': events, 'formC': formC}
     return render(request, 'base/contract-create.html', context)
+
+@login_required(login_url="login")
+def reviewContract(request, pk):
+    contract = Contract.objects.get(contract_id=pk)
+    context = {'contract': contract}
+    return render(request, 'base/contract-review.html', context)
+
+@login_required(login_url="login")
+def rejectContract(request, pk):
+    user = request.user
+    contract = Contract.objects.get(contract_id=pk)
+    contract.delete()
+    musicianmessagesubject = "Offer ID:" + str(contract.contract_id) + " Termination Confirmation"
+    musicianmessagebody = "Hello, " + str(user) + ".\n" + "This message confirms that you have rejected the offer made by " + str(contract.group) + ". " + "Thank you.\n" + "Sincerely,\n" + "The MusicMeet Team"
+    groupmessageSubject = "Offer ID: " + str(contract.contract_id) + " Rejected"
+    groupmessagebody = "Hello, " + str(contract.group) + ".\n" + "This notice confirms that " + str(user) + " has rejected your contract offer. The offer is terminated. Thank you. \nSincerely,\nThe MusicMeet Team"  
+    sysUser = User.objects.get(username='MusicMeet')
+    InboxMessage.objects.create(
+        sender=sysUser,
+        recipient=musician.user,
+        name=contract.group.user.first_name + " " + contract.group.user.last_name,
+        subject = subject,
+        body = messagebody,
+        contract_related = True,
+        contract_id = contract.contract_id
+    )
+    InboxMessage.objects.create(
+        sender=sysUser,
+        recipient=user,
+        name=contract.group.user.first_name + " " + contract.group.user.last_name,
+        subject = groupmessageSubject,
+        body = groupmessagebody,
+        contract_related = True,
+        contract_id = contract.contract_id
+    )
+    send_mail(
+        subject,
+        messagebodyEmail,
+        settings.EMAIL_HOST_USER,
+        [musician.user.email],
+        fail_silently=False,
+    )
+    send_mail(
+        groupmessageSubject,
+        groupmessagebodyemail,
+        settings.EMAIL_HOST_USER,
+        [contract.group.user.email],
+        fail_silently=False,
+    )
+    return render(request, 'contract-deleted.html')
+
+@login_required(login_url="login")
+def acceptContract(request, pk):
+    user = request.user
+    contract = Contract.objects.get(contract_id=pk)
+    contract.accepted = True
+    # Decrement the musicians wanted from the event
+    event = contract.event
+
+    num = event.musicians_needed
+    if (num == 0):
+        messages.error(request, "This event is already booked! Offer no longer valid.")
+        contract.delete()
+        return redirect('home')
+    newnum = num - 1
+    event.musicians_needed = newnum
+    if (newnum == 0):
+        event.booked = True
+    event.save()
+    contract.save()
+    subject = "Confirmation For Contract With " + str(contract.group.group_name) + " For Venue " + str(contract.event.name) + " Contract ID: " + str(contract.contract_id)
+    messagebodyEmail = "This email is to confirm that you, " + str(user.first_name) + " " + str(user.last_name) + " have agreed to perform with " + str(contract.group.group_name) + " on the day of " + str(contract.event.occurring) + " at " + str(contract.start_time) + " until " + str(contract.end_time) + " for a rate of $" + str(contract.pay) + " per hour.\n" + "The event will be held at " + str(contract.location) + ".\n" + " Please make note of the terms in this binding agreement outlined here. " + str(contract.description)
+    messagebody = "This message is to confirm that you, " + str(user.first_name) + " " + str(user.last_name) + " have agreed to perform with " + str(contract.group.group_name) + " on the day of " + str(contract.event.occurring) + " at " + str(contract.start_time) + " until " + str(contract.end_time) + " for a rate of $" + str(contract.pay) + " per hour.\n" + "The event will be held at " + str(contract.location) + ".\n" + " Please make note of the terms in this binding agreement outlined here. " + str(contract.description)
+    groupmessageSubject = "Confirmation of Contract Acceptance For " + str(user.first_name) + " " + str(user.last_name) + " For Venue " + str(contract.event.name) + " Contract ID: " + str(contract.contract_id)
+    groupmessagebodyEmail = "This email confirms that "+ str(user.first_name) + " " + str(user.last_name) + " has accepted your offer."
+    groupmessagebody = "This message confirms that "+ str(user.first_name) + " " + str(user.last_name) + " has accepted your offer."
+    sysUser = User.objects.get(username='MusicMeet')
+    InboxMessage.objects.create(
+        sender=sysUser,
+        recipient=user,
+        name=contract.group.user.first_name + " " + contract.group.user.last_name,
+        subject = subject,
+        body = messagebody,
+        contract_related = True,
+        contract_id = contract.contract_id
+    )
+    InboxMessage.objects.create(
+        sender=sysUser,
+        recipient=user,
+        name=user.first_name + " " + user.last_name,
+        subject = groupmessageSubject,
+        body = groupmessagebody,
+        contract_related = True,
+        contract_id = contract.contract_id
+    )
+    send_mail(
+        subject,
+        messagebodyEmail,
+        settings.EMAIL_HOST_USER,
+        [user.email],
+        fail_silently=False,
+    )
+    send_mail(
+        subject,
+        groupmessagebodyEmail,
+        settings.EMAIL_HOST_USER,
+        [contract.group.user.email],
+        fail_silently=False,
+    )
+    context = {'contract': contract}
+    return render(request, 'base/contract-accept.html', context)
+
+
 
 def viewMusician(request, pk):
     musician = Musician.objects.get(id=pk)

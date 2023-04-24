@@ -86,7 +86,7 @@ class ContractForm(forms.ModelForm):
     class Meta:
         model = Contract
         fields = "__all__"
-        exclude = ['owner', 'added']
+        exclude = ['owner', 'added', 'musician', 'group', 'accepted', 'event']
 
     def __init__(self, *args, **kwargs):
         super(ContractForm, self).__init__(*args, **kwargs)

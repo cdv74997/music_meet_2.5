@@ -63,6 +63,10 @@ def searchEvents(request):
         instruments = request.user.instrumentskill_set.all()
         musicianZip = musician.location
         filterDistanceParam = request.GET.get('distance')
+        if filterDistanceParam:
+            if int(filterDistanceParam) >= 10000:
+                filterDistanceParam = None  # treat "60+" as None, indicating no distance filter
+            request.session['distance_filter'] = int(filterDistanceParam)
         if filterDistanceParam is not None:
             logging.warning('test')
             distance = int(filterDistanceParam)
