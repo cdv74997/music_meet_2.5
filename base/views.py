@@ -86,6 +86,23 @@ def registerMusician(request):
             messages.error(request, 'An error occurred during registration')
 
     return render(request, 'base/musician_register.html', {'form': form})
+def updateUserMusician(request):
+    user=request.user
+    musician=Musician.objects.get(id=user.musician.id)
+    user_form = UserForm(instance=request.user)
+    musician_form = MusicianForm(instance=request.user.musician)
+    
+    if request.method == 'POST':
+        user_form = UserForm(request.POST, instance=request.user)
+        musician_form = MusicianForm(request.POST, instance=request.user.musician)
+
+        if user_form.is_valid() and musician_form.is_valid():
+            user_form.save()
+            musician_form.save()
+            messages.success(request, 'Your profile has been updated.')
+            return redirect('account')
+    context={'user_form': user_form, 'musician_form': musician_form}
+    return render(request, 'base/musician_update.html', context)
 
 def registerGroup(request):
     form = UserGroupForm()
@@ -709,10 +726,18 @@ def userAccount(request):
         context = {'group_name': group_name, 'genre': genre, 'location': location, 'events': events, 'user': user}
         return render(request, 'base/group_account.html', context)
     else:
+        now = datetime.date.today()
+        # I need to collect every group that I have an event that has passed for which I have accepted for
+        contracts = Contract.objects.filter(musician__id = user.musician.id, accepted=True)
+        contract_ids = [contract.contract_id for contract in contracts]
+        # performed is past tense so occurring must be in the past
+        events = Event.objects.filter(contract__contract_id__in=contract_ids, occurring__lt=now)
+        event_ids = [event.id for event in events]
+        groups = Group.objects.filter(contract__event_id__in=event_ids)
         genres = user.skill_set.all()
         instruments = user.instrumentskill_set.all()
         demos = user.demo_set.all()
-        context = {'user': user, 'genres': genres, 'instruments': instruments, 'demos': demos}
+        context = {'user': user, 'genres': genres, 'instruments': instruments, 'demos': demos, 'groups': groups}
         return render(request, 'base/musician_account.html', context)
 
 @login_required(login_url='login')
@@ -1121,10 +1146,41 @@ def viewMusician(request, pk):
 def viewGroup(request, pk):
     group = Group.objects.get(id=pk)
     # Lets just have it to see all their events
-    events = Events.objects.filter(Q(host=group.user))
+    events = Events.objects.filter(host=group.user)
     context = {'group': group, 'events': events}
     return render(request, 'base/group.html', context)
 
+@login_required(login_url="login")
+def pastEvents(request, pk):
+    now = datetime.date.today()
+    if hasattr(user, 'group'):
+        events = Events.objects.filter(host=group.user, occurring__lt=now)
+    elif hasattr(user, 'musician'):
+        musician = user.musician
+        # in both subsets of past and future events we are using accepted contracts as query
+        # here we must check if date occurring on event has passed
+        contracts = Contracts.objects.filter(musician__id=musician.id, accepted=True, event__occurring__lt=now)
+        contract_ids = [contract.contract_id for contract in contracts]
+        events = Events.objects.filter(contract__contract_id__in=contract_ids)
+        # This is the tricky part we must see if an accepted contract exists with this musician
+    context = {'events': events}
+    return(request, 'base/events-past.html')
 # This is  a comment
 
-
+@login_required(login_url="login")
+def currentEvents(request, pk):
+    now = datetime.date.today()
+    if hasattr(user, 'group'):
+        events = Events.objects.filter(host=group.user, occurring__gte=now)
+    elif hasattr(user, 'musician'):
+        musician = user.musician
+        # in both subsets of past and future events we are using accepted contracts as query
+        # here we must check if date occurring on event has passed
+        contracts = Contracts.objects.filter(musician__id=musician.id, accepted=True, event__occurring__gte=now)
+        contract_ids = [contract.contract_id for contract in contracts]
+        events = Events.objects.filter(contract__contract_id__in=contract_ids)
+        # This is the tricky part we must see if an accepted contract exists with this musician
+    else:
+        return redirect('login')
+    context = {'events': events}
+    return(request, 'base/events-current.html')

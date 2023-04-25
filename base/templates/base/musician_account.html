@@ -44,8 +44,26 @@
             <div class="avatar avatar--large active">
               <img src="{{request.user.avatar.url}}" />
             </div>
+            <h3>{{user.first_name}} {{user.last_name}}</h3>
+                    
+            <p>{{user.email}}</p>
+                
+                    
+            <a href="{% url 'musician-update' %}" class="btn btn--main btn--pill">Edit User Profile</a>
           </div>
+          {% if groups %}
+        <div class="profile__about">
+          <h3>Groups Performed With</h3>
+          <br>
+          {% for group in groups %}
+          <h4>{{group.group_name}}</h4>
+          <br>
+          {% endfor %}
+          <!--THIS NEEDS FIXING-->
           
+        </div>
+      </div>
+      {% endif %}
           <div class="profile__about">
             <h3>About</h3>
             <p>
@@ -120,13 +138,7 @@
           
          
         </div>
-
-        <div class="profile__about">
-          <h3>Past Events Performed</h3>
-          <!--THIS NEEDS FIXING-->
-          
-        </div>
-      </div>
+        
     
       <!-- Room List End -->
     
