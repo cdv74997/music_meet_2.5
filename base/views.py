@@ -93,8 +93,8 @@ def updateUserMusician(request):
     musician_form = MusicianForm(instance=request.user.musician)
     
     if request.method == 'POST':
-        user_form = UserForm(request.POST, instance=request.user)
-        musician_form = MusicianForm(request.POST, instance=request.user.musician)
+        user_form = UserForm(request.POST, request.FILES, instance=request.user)
+        musician_form = MusicianForm(request.POST, request.FILES, instance=request.user.musician)
 
         if user_form.is_valid() and musician_form.is_valid():
             user_form.save()
