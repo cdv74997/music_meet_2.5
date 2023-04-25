@@ -481,6 +481,19 @@ a {
   flex-basis: 25%;
 }
 /*========== Layout Box ==========*/
+.room {
+  width: 90%;
+  max-width: 68rem;
+  min-height: 40rem;
+  position: relative;
+   
+  
+  margin: auto;
+  
+  background-color: var(--color-dark);
+  border-radius: 1rem;
+  box-shadow: 1px 1px 6px 3px rgba(0, 0, 0, 0.1);
+}
 
 .layout__box {
   width: 90%;
@@ -1086,6 +1099,18 @@ div {
   padding-top: 2rem;
 }
 
+/* This was within media screen*/
+.room__box {
+  padding-left: 2rem;
+  padding-right: 2rem;
+  position: relative;
+  /*bottom: 40px;*/
+  height: 152.5vh;
+  
+  overflow-y: auto;
+  padding-bottom: 0;
+}
+
 @media screen and (max-width: 500px) {
   .room__header {
     top: 4.3rem;
@@ -1093,16 +1118,7 @@ div {
   }
 }
 
-.room__box {
-  padding-left: 2rem;
-  padding-right: 2rem;
-  position: relative;
-  bottom: 40px;
-  height: 152.5vh;
-  
-  /* overflow-y: auto; */
-  padding-bottom: 0;
-}
+
 
 @media screen and (max-width: 500px) {
   .room__box {
