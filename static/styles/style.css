@@ -95,9 +95,22 @@ a {
   width: 90%;
   margin: auto;
 }
+.btnred {
+  background-color: red;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  cursor: pointer;
+  transition: all ease-in-out 0.3s;
+  padding: 1rem 2rem;
+  border-radius: 5px;
+  box-shadow: 1px 1px 3px 1px rgba(0, 0, 0, 0.15);
+  font-weight: 500;
+}
 
 .btn {
-  background-color: red;
+  background-color: transparent;
   border: none;
   display: inline-flex;
   align-items: center;
@@ -114,6 +127,7 @@ a {
 
 .btnTwo {
   background-color: lime;
+  color: white;
   border: none;
   display: inline-flex;
   align-items: center;
@@ -231,9 +245,12 @@ a {
 }
 
 .avatar.avatar--medium img {
-  width: 3.6rem;
-  height: 3.6rem;
+  width: 7.6rem;
+  height: 7.6rem;
   border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .avatar.avatar--medium:after {
@@ -788,6 +805,13 @@ div {
 
 .roomListRoom__content {
   margin: 1rem 0;
+
+}
+.roomListRoom__contentR {
+  margin: 1rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 
@@ -798,8 +822,19 @@ div {
   color: var(--color-light);
   transition: all 0.3s ease-in-out;
 }
+.roomListRoom__contentR a {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+  color: var(--color-light);
+  transition: all 0.3s ease-in-out;
+}
 
 .roomListRoom__content a:hover {
+  color: var(--color-main);
+}
+.roomListRoom__contentR a:hover {
   color: var(--color-main);
 }
 
@@ -1400,15 +1435,42 @@ div {
 }
 
 
-
+.message {
+  padding: 1.5rem 0 1.5rem 50px;
+}
 
 .messages {
     list-style: none;
-    background: var(--color-white);
+    background: white;
     text-align: center;
-    border: 2px solid var(--color-light);
+    border: 2px solid black;
     border-radius: 0.7rem;
 }
+
+.message.message--unread a span {
+  font-weight: 700;
+  color: black;
+}
+
+.message:not(:last-child) {
+  border-bottom: 2px solid #737373;
+}
+.content-box {
+  width: 95%;
+  max-width: 85rem;
+  margin: 0 auto;
+}
+
+.messagePage .message {
+  list-style: none;
+  background: white;
+  padding: 3.5rem 5rem;
+  border: 2px solid back;
+  border-radius: 0.7rem;
+}
+
+
+
 
 ul {
     display: block;

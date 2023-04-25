@@ -17,6 +17,15 @@ import logging
 import datetime
 from django.core.mail import send_mail
 from django.conf import settings
+from django.http import HttpResponseRedirect
+
+def go_back(request):
+    # Get the previous page URL
+    redirect_url = request.META.get('HTTP_REFERER')
+    
+    # Redirect to the previous page
+    print(request.META['HTTP_REFERER'])
+    return redirect(redirect_url)
 
 
 logger = logging.getLogger('django')
@@ -593,7 +602,7 @@ def updateEvent(request, pk):
     if request.method == 'POST':
         form = EventForm(request.POST, request.FILES)
         
-        topic_name = Topic.objects.get(id=request.POST.get('topic'))
+        topic_name = Topic.objects.get(name=request.POST.get('topic'))
         #topic_name = request.POST.get('topic') only if form is like before
         topic, created = Topic.objects.get_or_create(name=topic_name)
         if form.is_valid():
@@ -940,7 +949,7 @@ def createContract(request, pk):
                 name=user.first_name + " " + user.last_name,
                 subject = groupmessageSubject,
                 body = groupmessagebody,
-                contract_related = True,
+                contract_related = False,
                 contract_id = contract.contract_id,
 
             )
@@ -967,8 +976,11 @@ def createContract(request, pk):
 
 @login_required(login_url="login")
 def reviewContract(request, pk):
-    contract = Contract.objects.get(contract_id=pk)
-    context = {'contract': contract}
+    user = request.user
+    message = user.inboxmessages.get(id=pk)
+    contract_id = message.contract_id
+    contract = Contract.objects.get(contract_id=contract_id)
+    context = {'contract': contract, 'message': message}
     return render(request, 'base/contract-review.html', context)
 
 @login_required(login_url="login")
@@ -987,7 +999,7 @@ def rejectContract(request, pk):
         name=contract.group.user.first_name + " " + contract.group.user.last_name,
         subject = subject,
         body = messagebody,
-        contract_related = True,
+        contract_related = False,
         contract_id = contract.contract_id
     )
     InboxMessage.objects.create(
@@ -996,7 +1008,7 @@ def rejectContract(request, pk):
         name=contract.group.user.first_name + " " + contract.group.user.last_name,
         subject = groupmessageSubject,
         body = groupmessagebody,
-        contract_related = True,
+        contract_related = False,
         contract_id = contract.contract_id
     )
     send_mail(
@@ -1018,8 +1030,13 @@ def rejectContract(request, pk):
 @login_required(login_url="login")
 def acceptContract(request, pk):
     user = request.user
-    contract = Contract.objects.get(contract_id=pk)
+    message = InboxMessage.objects.get(id=pk)
+    contract_id = message.contract_id
+    contract = Contract.objects.get(contract_id=contract_id)
     contract.accepted = True
+    # Once the contract is accepted the message will still exist but never be able to be reviewed again
+    # Which reminds me of the need to implement delete inbox message
+    message.contract_related = False
     # Decrement the musicians wanted from the event
     event = contract.event
 
@@ -1034,6 +1051,7 @@ def acceptContract(request, pk):
         event.booked = True
     event.save()
     contract.save()
+    message.save()
     subject = "Confirmation For Contract With " + str(contract.group.group_name) + " For Venue " + str(contract.event.name) + " Contract ID: " + str(contract.contract_id)
     messagebodyEmail = "This email is to confirm that you, " + str(user.first_name) + " " + str(user.last_name) + " have agreed to perform with " + str(contract.group.group_name) + " on the day of " + str(contract.event.occurring) + " at " + str(contract.start_time) + " until " + str(contract.end_time) + " for a rate of $" + str(contract.pay) + " per hour.\n" + "The event will be held at " + str(contract.location) + ".\n" + " Please make note of the terms in this binding agreement outlined here. " + str(contract.description)
     messagebody = "This message is to confirm that you, " + str(user.first_name) + " " + str(user.last_name) + " have agreed to perform with " + str(contract.group.group_name) + " on the day of " + str(contract.event.occurring) + " at " + str(contract.start_time) + " until " + str(contract.end_time) + " for a rate of $" + str(contract.pay) + " per hour.\n" + "The event will be held at " + str(contract.location) + ".\n" + " Please make note of the terms in this binding agreement outlined here. " + str(contract.description)
@@ -1047,16 +1065,16 @@ def acceptContract(request, pk):
         name=contract.group.user.first_name + " " + contract.group.user.last_name,
         subject = subject,
         body = messagebody,
-        contract_related = True,
+        contract_related = False,
         contract_id = contract.contract_id
     )
     InboxMessage.objects.create(
         sender=sysUser,
-        recipient=user,
+        recipient=contract.group.user,
         name=user.first_name + " " + user.last_name,
         subject = groupmessageSubject,
         body = groupmessagebody,
-        contract_related = True,
+        contract_related = False,
         contract_id = contract.contract_id
     )
     send_mail(
@@ -1100,6 +1118,12 @@ def viewMusician(request, pk):
     context = {'musician': musician, 'contractable': contractable, 'primaryInstrument': primaryInstrument, 'instruments': instruments, 'primaryGenre': primaryGenre, 'genres': genres, 'demos': demos}
     return render(request, 'base/musician.html', context)
 
+def viewGroup(request, pk):
+    group = Group.objects.get(id=pk)
+    # Lets just have it to see all their events
+    events = Events.objects.filter(Q(host=group.user))
+    context = {'group': group, 'events': events}
+    return render(request, 'base/group.html', context)
 
 # This is  a comment
 

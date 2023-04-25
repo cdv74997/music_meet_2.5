@@ -48,7 +48,7 @@
                   
                 </label>
               </form>
-
+              {% if user.musician %}
               <form method="GET" action="{% url 'home' %}">
                 
                 <input id="distbutton" class="btnThree" type="submit" value="Filter Distance" onclick="getdistance()"/>
@@ -63,8 +63,10 @@
                   <option value="100" {% if request.session.distance_filter == 100 %}selected{% endif %}>100 miles</option>
                 
                 </select>
+               
               </div>
               </form>
+              {% endif %}
               
           
               

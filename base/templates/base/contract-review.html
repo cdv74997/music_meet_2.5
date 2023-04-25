@@ -14,7 +14,7 @@
             <br>
             <p>Date Of Event: {{contract.event.occurring}}</p>
            <br>
-           <a style="color: rgb(151, 231, 39);" href="{% url 'accept-contract' contract.contract_id %}">Accept Offer</a> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<a style="color: red;" href="{% url 'decline-contract' contract.contract_id %}">Decline Offer</a>
+           <a style="color: rgb(151, 231, 39);" href="{% url 'accept-contract' message.id %}">Accept Offer</a> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<a style="color: red;" href="{% url 'decline-contract' contract.contract_id %}">Decline Offer</a>
           
          
 

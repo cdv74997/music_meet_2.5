@@ -46,5 +46,7 @@ urlpatterns = [
     path('decline-contract/<str:pk>/', views.rejectContract, name='decline-contract'),
     path('musician/<str:pk>/', views.viewMusician, name='view-musician'), 
     path('add-demo/', views.addDemo, name='add-demo'),
+    path('previous-page/', views.go_back, name='previous-page'),
+    path('group/<str:pk>/', views.viewGroup, name='view-group'),
 
 ]
