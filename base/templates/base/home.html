@@ -55,7 +55,7 @@
                 <input type = "hidden" id="distanceDisplay" name="distance"></input>
                 <div class="form__group shorten2">
                 <select name="distancetocalc" id="distance">
-                  <option value="10000" {% if not request.session.distance_filter or request.session.distance_filter >= 10000 %}selected{% endif %}>No Limit On How Far</option>
+                  <option value="5000" {% if not request.session.distance_filter or request.session.distance_filter >= 5000 %}selected{% endif %}>No Limit On How Far</option>
                   <option value="15" {% if request.session.distance_filter == 15 %}selected{% endif %}>15 miles</option>
                   <option value="30" {% if request.session.distance_filter == 30 %}selected{% endif %}>30 miles</option>
                   <option value="45" {% if request.session.distance_filter == 45 %}selected{% endif %}>45 miles</option>

@@ -65,13 +65,13 @@ def searchEvents(request):
         filterDistanceParam = request.GET.get('distance')
         if filterDistanceParam:
             if int(filterDistanceParam) >= 10000:
-                filterDistanceParam = None  # treat "60+" as None, indicating no distance filter
+                filterDistanceParam = 10000  # treat "60+" as None, indicating no distance filter
             request.session['distance_filter'] = int(filterDistanceParam)
         if filterDistanceParam is not None:
             logging.warning('test')
             distance = int(filterDistanceParam)
         else:
-            distance = 10000000000
+            distance = 10000
 
         print("---------------", distance)
         
@@ -176,7 +176,7 @@ def searchEvents(request):
             #groups |= userGroups
 
     except AttributeError:
-        distance = 100000000000
+        distance = 10000
         # this is how our search is extracted from what is passed to url
         q = request.GET.get('q') if request.GET.get('q') != None else ''
         # What this is is a query for our events

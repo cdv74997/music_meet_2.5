@@ -709,6 +709,9 @@ div {
 /*==============================
 =>  Room List
 ================================*/
+.roomList {
+  margin: 0 auto;
+}
 
 .roomList__header {
   display: flex;

@@ -37,6 +37,7 @@
        {% include 'base/topics_component.html' %}
 
       <!-- Room List Start -->
+
       <div class="roomList">
         <div class="profile">
           <div class="profile__avatar">
@@ -44,25 +45,7 @@
               <img src="{{request.user.avatar.url}}" />
             </div>
           </div>
-          <div class="profile__info">
-            {% if user.account_type == "G" %}
-            <h3>{{user.group.group_name}}</h3>
-            <h2>Genre: {{user.group.genre}}</h2>
-
-            {% else %}
-            <h3>{{user.first_name}} {{user.last_name}}</h3>
-            {% endif %}
-            <p>{{user.email}}</p>
-            {% if user.account_type == "G" %}
-
-            <a class="btn btn--pill edit-user-button" href="{% url 'update-group' user.group.id %}">Edit Group Profile</a>
-            {% endif %}
-
-            {% if request.user == user %}
-            <a href="{% url 'update-user' %}" class="btn btn--main btn--pill">Edit User Profile</a>
-            {% endif %}
-
-          </div>
+          
           <div class="profile__about">
             <h3>About</h3>
             <p>
@@ -70,7 +53,7 @@
             </p>
           </div>
           <!-- If the current user is a musician, display their musician info -->
-          {% if user.account_type == "M" %}
+          
           {% if demos %}
           <div class="profile__about">
             <h3>Demos</h3>
@@ -135,17 +118,18 @@
           </div>
 
           
-          {% endif %}
+         
         </div>
 
         <div class="profile__about">
-          <h3>Events</h3>
+          <h3>Past Events Performed</h3>
           <!--THIS NEEDS FIXING-->
-          {% include 'base/feed_component.html' %}
+          
         </div>
       </div>
+    
       <!-- Room List End -->
-      <
+    
       
       <!-- Activities End -->
     </div>

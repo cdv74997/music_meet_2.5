@@ -391,8 +391,12 @@ def event(request, pk):
     # all we have to get is the model name and put it in lowercase
     # says give us the entire set of messages related to this specific event
     event_messages = event.message_set.all().order_by('-created')
-    participants = event.participants.all()
-
+    #participants = event.participants.all()
+    # Make a query to all users that have accepted a contract for this event
+    contracts = Contract.objects.filter(event=event, accepted=True)
+    musicians = Musician.objects.filter(contract__in=contracts)
+    participants = User.objects.filter(musician__in=musicians)
+    
     if request.method == 'POST':
         message = Message.objects.create(
             user = request.user, 
@@ -688,12 +692,19 @@ def activityPage(request):
 @login_required(login_url='login')
 def userAccount(request):
     user = request.user
-    genres = user.skill_set.all()
-    instruments = user.instrumentskill_set.all()
-    demos = user.demo_set.all()
-
-    context = {'user': user, 'genres': genres, 'instruments': instruments, 'demos': demos}
-    return render(request, 'base/account.html', context)
+    if hasattr(user, 'group'):
+        group_name = user.group.group_name
+        genre = user.group.genre
+        location = user.group.location
+        events = Event.objects.filter(host__id=user.id)
+        context = {'group_name': group_name, 'genre': genre, 'location': location, 'events': events, 'user': user}
+        return render(request, 'base/group_account.html', context)
+    else:
+        genres = user.skill_set.all()
+        instruments = user.instrumentskill_set.all()
+        demos = user.demo_set.all()
+        context = {'user': user, 'genres': genres, 'instruments': instruments, 'demos': demos}
+        return render(request, 'base/musician_account.html', context)
 
 @login_required(login_url='login')
 def inbox(request):
