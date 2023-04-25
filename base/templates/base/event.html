@@ -99,10 +99,11 @@
             <div class="thread">
               <div class="thread__top">
                 <div class="thread__author">
-                  {% if user.musician %}
+                  {% if request.user.musician %}
                   <a href="{% url 'view-musician' message.user.musician.id %}" class="thread__authorInfo">
-                  {% elif user.group %}
-                  <a href="{% url 'view-group' message.user.group.id %}" class="thread__authorInfo"></a>
+                  {% else %}
+                  <a href="{% url 'view-group' message.user.group.id %}" class="thread__authorInfo">
+                  {% endif %}
                     <div class="avatar avatar--small">
                       <img src="{{message.user.avatar.url}}" />
                     </div>
@@ -110,7 +111,7 @@
                   </a>
                   <span class="thread__date">{{message.created|timesince}} ago</span>
                 </div>
-                {% endif %}
+
                 {% if request.user == message.user %}
                 <a href="{% url 'delete-message' message.id %}">
                   <div class="thread__delete">
@@ -124,11 +125,9 @@
                 </a>
                 {% endif %}
               </div>
-              
               <div class="thread__details">
                 {{message.body}}
               </div>
-              
             </div>
             {% endfor %}
 
