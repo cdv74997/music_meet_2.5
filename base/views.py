@@ -47,6 +47,9 @@ def registerMusician(request):
         form = UserMusicianForm(request.POST)
         if form.is_valid():
             try:
+                # we need to grab primaryskills to create them
+                primaryinstrument = form.cleaned_data['primaryinstrument'],
+                primarygenre=form.cleaned_data['primarygenre'],
                 user=User.objects.create(
                     email=form.cleaned_data['email'],
                     password=make_password(form.cleaned_data['password']),
@@ -56,12 +59,24 @@ def registerMusician(request):
                 )
                 musician=Musician.objects.create(
                     user=user,
-                    primaryinstrument=form.cleaned_data['primaryinstrument'],
-                    primarygenre=form.cleaned_data['primarygenre'],
+                    primaryinstrument=primaryinstrument,
+                    primarygenre=primarygenre,
                     experience=form.cleaned_data['experience'],
                     location=form.cleaned_data['location'],
     
                 )
+                instrumentskill=InstrumentSkill.objects.create(
+                    owner=user,
+                    name=primaryInstrument,
+                    primary=True
+
+                )
+                genre=Skill.objects.create(
+                    owner=user,
+                    name=primaryGenre,
+                    primary=True
+                )
+
                 subject = "Welcome to MusicMeet"
                 message = "We are glad that you came here to find your music.\nSincerely,\nThe Music Meet Team."
                 messages.success(request, 'Thank you for registering! Please sign in.')
@@ -919,21 +934,22 @@ def viewReviews(request):
 def createContract(request, pk):
     musician = Musician.objects.get(id=pk)
     user = request.user
+    group = user.group
     eventsToStart = Event.objects.filter(Q(host=user) & Q(musicians_needed__gte=1))
-    events = Event.objects.none()
-    for event in eventsToStart:
-        id = event.id
-        # Asks the question does a contract exist for this user
-        reject = Contract.objects.filter(Q(event__id=id) & Q(musician__id=musician.id))
-        print(not reject)
-        if not reject:
-            events |= Event.objects.filter(id=id)
+    events = Event.objects.filter(host=user, booked=False)
+    #for event in eventsToStart:
+    #    id = event.id
+    #    # Asks the question does a contract exist for this user
+    #    reject = Contract.objects.filter(Q(event__id=id) & Q(musician__id=musician.id))
+    #    print(not reject)
+    #    if not reject:
+    #        events |= Event.objects.filter(id=id)
     
-    formC = ContractForm()
+    formC = ContractForm(user)
 
     
     if request.method == "POST":
-        formC = ContractForm(request.POST)
+        formC = ContractForm(user,request.POST)
     
         eventC = request.POST.get('eventC')
         reject = Contract.objects.filter(Q(event__name=eventC) & Q(musician__id=musician.id))
@@ -944,12 +960,12 @@ def createContract(request, pk):
             return redirect("home")
 
         #eventId = event.id
-        eventsub = Event.objects.get(name=eventC)
+        #eventsub = Event.objects.get(name=eventC)
         if formC.is_valid():
             contract = formC.save(commit=False)
             contract.musician = musician
             contract.group = user.group
-            contract.event = eventsub
+            
             contract.save()
             messagebody = "Hello, " + str(musician) + " you have a new contract offer from " + str(user.group) + ".\n" + "Please respond fill out your response here. Thank you.\n" + "Sincerely,\n" + "The MusicMeet Team"
             messagebodyEmail = "Hello, " + str(musician) + " you have a new contract offer from " + str(user.group) + ".\n" + "Please respond by viewing the notification for this offer in your inbox in the app. Thank you.\n" + "Sincerely,\n" + "The MusicMeet Team"
@@ -961,7 +977,7 @@ def createContract(request, pk):
             InboxMessage.objects.create(
                 sender=sysUser,
                 recipient=musician.user,
-                name=user.first_name + " " + user.last_name,
+                name=musician.user.first_name + " " + musician.user.last_name,
                 subject = subject,
                 body = messagebody,
                 contract_related = True,

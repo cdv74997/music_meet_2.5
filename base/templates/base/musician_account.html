@@ -18,6 +18,14 @@
         <div class="profile-info">
           <h1 class="name">{{user.first_name}} {{user.last_name}}</h1>
           <p class="email">{{user.email}}</p>
+          {% if groups %}
+          <h3>Groups Performed With</h3>
+          <br>
+          {% for group in groups %}
+          <h4>{{group.group_name}}</h4>
+          <br>
+          {% endfor %}
+          {% endif %}
           <ul class="instruments">
             <h3>Instruments</h3>
             {% if instruments %}

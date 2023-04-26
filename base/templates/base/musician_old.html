@@ -1,0 +1,149 @@
+{% extends 'main.html' %}
+{% load embed_video_tags %}
+{% block content %}
+  <main class="profile-page layout layout--3">
+    <div class="container">
+      <!-- Topics Start 
+      <div class="topics">
+        <div class="topics__header">
+          <h2>Browse Topics</h2>
+        </div>
+        <ul class="topics__list">
+          <li>
+            <a href="/" class="active">All <span>553</span></a>
+          </li>
+          <li>
+            <a href="/">Python <span>232</span></a>
+          </li>
+          <li>
+            <a href="/">JavaScript <span>122</span></a>
+          </li>
+          <li>
+            <a href="/">React <span>57</span></a>
+          </li>
+          <li>
+            <a href="/">Database <span>90</span></a>
+          </li>
+        </ul>
+        <button class="btn btn--link" href="/">
+          More
+          <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+            <title>chevron-down</title>
+            <path d="M16 21l-13-13h-3l16 16 16-16h-3l-13 13z"></path>
+          </svg>
+        </button>
+      </div>
+       Topics End (the include tag now replaces)-->
+       {% include 'base/topics_component.html' %}
+
+      <!-- Room List Start -->
+      <div class="roomList">
+        <div class="profile">
+          <div class="profile__avatar">
+            <div class="avatar avatar--large active">
+              <img src="{{musician.user.avatar.url}}" />
+            </div>
+          </div>
+          <div class="profile__info">
+            
+            <h3>{{musician.user.first_name}} {{musician.user.last_name}}</h3>
+            
+            <p>@{{musician.user.username}}</p>
+            {% if request.user.group %}
+            <a class="btn btn--main" href="{% url 'create-contract' musician.id %}">
+              <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+                <title>add</title>
+                <path
+                  d="M16.943 0.943h-1.885v14.115h-14.115v1.885h14.115v14.115h1.885v-14.115h14.115v-1.885h-14.115v-14.115z"
+                ></path>
+              </svg> 
+              Send Contract Offer
+            </a>
+            {% endif %}
+            
+
+         
+
+          </div>
+          <div class="profile__about">
+            <h3>About</h3>
+            <p>
+              {{musician.user.bio}}
+            </p>
+          </div>
+       
+          <div class="profile__about">
+            <h3>Instruments</h3>
+            <br>
+            <p>{{primaryInstrument}}</p>
+            <br>
+            {% if instruments %}
+            {% for instrument in instruments %}
+            <p>
+              {{instrument.name}}
+            </p>
+
+            
+            
+            <br>
+            {% endfor %}
+            {% endif %}
+          </div>
+
+          <div class="profile__about">
+            <h3>Genres</h3>
+            <br>
+            <p>{{primaryGenre}}</p>
+            <br>
+            {% if genres %}
+            {% for genre in genres %}
+            <p>
+              {{genre.name}}
+            </p>
+            
+           
+            
+            {% endfor %}
+            {% endif %}
+          </div>
+
+          <div class="profile__about">
+            <h3>Years of Experience</h3>
+            <p>
+              {{musician.experience}}
+            </p>
+          </div>
+
+          <div class="profile__about">
+            <h3>Location</h3>
+            <p>
+              {{musician.location}}
+            </p>
+          </div>
+
+          <div class="profile__about">
+            {% for demo in demos %}
+            <!--<h3>{{demo.title}}</h3>
+            {% video demo.url '426x240' %}
+            <p>
+              {{demo.url}}
+            </p>
+            <p>Created on: {{demo.added}}</p>
+          </div>-->
+          <h3 class="text-center mt-2 mb-2">{{demo.title}}</h3>
+          <video class="video-fluid" controls="controls">
+                 <source src="{{demo.video.url}}" type="video/mp4" />
+          </video>
+          {% endfor %}
+          
+        </div>
+
+        <div class="profile__about">
+          <h3>Events</h3>
+          {% include 'base/feed_component.html' %}
+        </div>
+      </div>
+      <
+    </div>
+  </main>
+{% endblock content %}

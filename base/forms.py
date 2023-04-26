@@ -86,13 +86,17 @@ class ContractForm(forms.ModelForm):
     class Meta:
         model = Contract
         fields = "__all__"
-        exclude = ['owner', 'added', 'musician', 'group', 'accepted', 'event']
+        exclude = ['owner', 'added', 'musician', 'group', 'accepted']
 
-    def __init__(self, *args, **kwargs):
-        super(ContractForm, self).__init__(*args, **kwargs)
-
-        for name, field in self.fields.items():
-            field.widget.attrs.update({'class': 'input'})
+    def __init__(self, user, *args, **kwargs):
+       super().__init__(*args, **kwargs)
+       group = user.group
+       if group:
+           self.fields['event'].queryset = Event.objects.filter(host=user, booked=False)
+       else:
+           self.fields['event'].queryset = Event.objects.none()
+       for name, field in self.fields.items():
+           field.widget.attrs.update({'class': 'input'})
 
 
 class DemoForm(forms.ModelForm):

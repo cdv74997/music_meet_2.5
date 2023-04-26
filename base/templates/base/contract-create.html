@@ -21,18 +21,7 @@
           <form class="form" action="" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
 
-            <div class="form__group">
-              <label for="room_topic">Event</label>
-              <input required type="text" name="eventC" value="{{event}}" list="topic-list" />
-              <datalist id="topic-list">
-                <select id="room_topic">
-                  {% for event in events %}
-                  <option value="{{event}}">{{event}}</option>
-                  {% endfor %}
-                </select>
-              </datalist>
-              
-            </div><!--
+            <!--
             
             <div class="form__group">
               <label for="room_name">Event Name</label>
