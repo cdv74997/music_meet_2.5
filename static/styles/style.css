@@ -865,6 +865,11 @@ div {
   margin-bottom: 20px;
 }
 
+.videos h3 {
+  text-align: center;
+  margin-top: 0;
+}
+
 .instruments li, .genres li {
   font-size: 16px;
   margin-bottom: 10px;
@@ -910,8 +915,6 @@ div {
 }
 /* Video demos */
 .video {
-  width: 48%;
-  margin-right: 3.33%;
   margin-bottom: 20px;
   border-radius: 5px;
 }

@@ -48,7 +48,8 @@ urlpatterns = [
     path('add-demo/', views.addDemo, name='add-demo'),
     path('previous-page/', views.go_back, name='previous-page'),
     path('group/<str:pk>/', views.viewGroup, name='view-group'),
-    path('past-events/<str:pk>/', views.pastEvents, name='past-events'),
-    path('musician-update/', views.updateUserMusician, name='musician-update')
+    path('past-events/', views.pastEvents, name='past-events'),
+    path('current-events/', views.currentEvents, name='current-events'),
+    path('musician-update/', views.updateUserMusician, name='musician-update'),
 
 ]

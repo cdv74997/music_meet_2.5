@@ -1151,7 +1151,7 @@ def viewGroup(request, pk):
     return render(request, 'base/group.html', context)
 
 @login_required(login_url="login")
-def pastEvents(request, pk):
+def pastEvents(request):
     now = datetime.date.today()
     if hasattr(user, 'group'):
         events = Events.objects.filter(host=group.user, occurring__lt=now)
@@ -1168,7 +1168,7 @@ def pastEvents(request, pk):
 # This is  a comment
 
 @login_required(login_url="login")
-def currentEvents(request, pk):
+def currentEvents(request):
     now = datetime.date.today()
     if hasattr(user, 'group'):
         events = Events.objects.filter(host=group.user, occurring__gte=now)
