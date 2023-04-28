@@ -99,7 +99,7 @@
             <div class="thread">
               <div class="thread__top">
                 <div class="thread__author">
-                  {% if request.user.musician %}
+                  {% if message.user.musician %}
                   <a href="{% url 'view-musician' message.user.musician.id %}" class="thread__authorInfo">
                   {% else %}
                   <a href="{% url 'view-group' message.user.group.id %}" class="thread__authorInfo">

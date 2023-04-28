@@ -439,10 +439,21 @@ def event(request, pk):
     participants = User.objects.filter(musician__in=musicians)
     
     if request.method == 'POST':
+        body = request.POST.get('body')
         message = Message.objects.create(
             user = request.user, 
             event = event,
-            body = request.POST.get('body')
+            body = body
+        )
+        groupUser = event.host
+        subject = str(event.name) + " Notification. " + str(request.user.first_name) + " " + str(request.user.last_name) + " commented on your event."
+        sysUser = User.objects.get(username='MusicMeet')
+        inboxMessage = InboxMessage.objects.create(
+            sender=sysUser,
+            recipient=groupUser,
+            name=groupUser.first_name + " " + groupUser.last_name,
+            subject = subject,
+            body = body,
         )
         event.participants.add(request.user)
         return redirect('event', pk=event.id)
@@ -674,6 +685,19 @@ def deleteEvent(request, pk):
         event.delete()
         return redirect('home')
     return render(request, 'base/delete.html', {'obj':event})
+
+@login_required(login_url='login')
+def deleteDemo(request, pk):
+    demo = Demo.objects.get(id=pk)
+
+    if request.user != demo.owner:
+        return HttpResponse('You are not authorized here!!')
+
+    if request.method == 'POST':
+        demo.delete()
+        return redirect('home')
+    return render(request, 'base/delete.html', {'obj': event})
+
 
 
 @login_required(login_url='login')
@@ -1141,11 +1165,11 @@ def viewMusician(request, pk):
     musician = Musician.objects.get(id=pk)
     demos = Demo.objects.filter(owner__id=musician.user.id)
     # We will only have one primary instrument
-    primaryInstrument = InstrumentSkill.objects.get(Q(owner=musician.user) & Q(primary=True))
+   
     # The complement of the set containing exclusively primary instrument
-    instruments = InstrumentSkill.objects.filter(Q(owner=musician.user) & Q(primary=False))
-    primaryGenre = Skill.objects.get(Q(owner=musician.user) & Q(primary=True))
-    genres = Skill.objects.filter(Q(owner=musician.user) & Q(primary=False))
+    instruments = InstrumentSkill.objects.filter(owner=musician.user)
+   
+    genres = Skill.objects.filter(owner=musician.user)
     contractable = False
     user = request.user
     try:
@@ -1156,13 +1180,13 @@ def viewMusician(request, pk):
     except:
         contractable = False
     
-    context = {'musician': musician, 'contractable': contractable, 'primaryInstrument': primaryInstrument, 'instruments': instruments, 'primaryGenre': primaryGenre, 'genres': genres, 'demos': demos}
+    context = {'musician': musician, 'contractable': contractable, 'instruments': instruments,'genres': genres, 'demos': demos}
     return render(request, 'base/musician.html', context)
 
 def viewGroup(request, pk):
     group = Group.objects.get(id=pk)
     # Lets just have it to see all their events
-    events = Events.objects.filter(host=group.user)
+    events = Event.objects.filter(host=group.user)
     context = {'group': group, 'events': events}
     return render(request, 'base/group.html', context)
 

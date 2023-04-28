@@ -36,6 +36,7 @@ urlpatterns = [
     path('add-instrument/', views.addInstrument, name="add-instrument"),
     path('update-instrument/<str:pk>/', views.updateInstrument, name="update-instrument"),
     path('delete-instrument/<str:pk>/', views.deleteInstrument, name="delete-instrument"),
+    path('delete-demo/<str:pk>/', views.deleteDemo, name='delete-demo'),
     path('update-genre/<str:pk>/', views.updateGenre, name="update-genre"),
     path('delete-genre/<str:pk>/', views.deleteGenre, name="delete-genre"),
     path('view-reviews/', views.viewReviews, name="view-reviews"),

@@ -74,6 +74,7 @@
                    <source src="{{demo.demovid.url}}" type="video/mp4" />
             </video>
             <h3 class="text-center mt-2 mb-2">Created On: {{demo.added}}</h3>
+            <a class="tag tag--pill tag--sub settings__btn tag--lg red" href="{% url 'delete-demo' demo.id %}"><i class="im im-plus"></i>Delete Demo</a>
             </div>
             {% endfor %}
           
@@ -81,6 +82,7 @@
             
           </div>
           {% endif %}
+          <a class="tag tag--pill tag--sub settings__btn tag--lg lime" href="{% url 'add-demo' %}"><i class="im im-plus"></i>Add Demo</a>
         </div>
       </div>
   </div>
