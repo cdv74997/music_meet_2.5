@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.db import IntegrityError
 from django.contrib.auth.hashers import make_password
+import ast
 from django.http import HttpResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -48,8 +49,8 @@ def registerMusician(request):
         if form.is_valid():
             try:
                 # we need to grab primaryskills to create them
-                primaryinstrument = form.cleaned_data['primaryinstrument'],
-                primarygenre=form.cleaned_data['primarygenre'],
+                primaryinstrument = form.cleaned_data['primaryinstrument']
+                primarygenre=form.cleaned_data['primarygenre']
                 user=User.objects.create(
                     email=form.cleaned_data['email'],
                     password=make_password(form.cleaned_data['password']),
