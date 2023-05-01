@@ -964,9 +964,9 @@ def createInboxMessage(request, pk):
             messages.success(request, 'Your message was successfully sent!')
             return redirect('user-profile', pk=recipient.id)
     context = {'recipient': recipient, 'form': form}
-    if hasattr(user, 'group'):
+    if hasattr(recipient, 'group'):
         return redirect('view-group')
-    elif hasattr(user, 'musician'):
+    elif hasattr(recipient, 'musician'):
         return redirect('view-musician')
     else:
         return redirect('user-profile')
