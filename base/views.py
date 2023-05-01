@@ -119,6 +119,24 @@ def updateUserMusician(request):
     context={'user_form': user_form, 'musician_form': musician_form}
     return render(request, 'base/musician_update.html', context)
 
+def updateUserGroup(request):
+    user=request.user
+    group=Group.objects.get(id=user.group.id)
+    user_form = UserForm(instance=request.user)
+    group_form = GroupForm(instance=request.user.group)
+
+    if request.method == 'POST':
+        user_form = UserForm(request.POST, request.FILES, instance=request.user)
+        group_form = GroupForm(request.POST, request.FILES, instance=request.user.group)
+
+        if user_form.is_valid() and group_form.is_valid():
+            user_form.save()
+            group_form.save()
+            messages.success(request, 'Your profile has been updated.')
+            return redirect('account')
+    context={'user_form': user_form, 'group_form': group_form}
+    return render(request, 'base/group_update.html', context)
+
 def registerGroup(request):
     form = UserGroupForm()
     if request.method == 'POST':

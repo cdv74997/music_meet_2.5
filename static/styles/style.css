@@ -126,8 +126,8 @@ a {
 }
 
 .btnTwo {
-  background-color: lime;
-  color: white;
+  background-color: skyblue;
+  color: black;
   border: none;
   display: inline-flex;
   align-items: center;
@@ -138,6 +138,9 @@ a {
   border-radius: 5px;
   box-shadow: 1px 1px 3px 1px rgba(0, 0, 0, 0.15);
   font-weight: 500;
+}
+.btnTwo:hover {
+  background-color: greenyellow;
 }
 
 .btnThree {
@@ -861,7 +864,7 @@ div {
 
 .email {
   font-size: 16px;
-  color: #888;
+  
   margin-bottom: 20px;
 }
 
@@ -875,6 +878,7 @@ div {
   margin-bottom: 10px;
   padding: 5px;
   
+  
   border: 1px solid #ccc;
   border-radius: 5px;
   text-align: left;
@@ -885,6 +889,7 @@ div {
 .instruments, .genres {
   display: inline-block;
   width: 48%;
+  margin-top: 20px;
   vertical-align: top;
   padding: 10px;
   box-sizing: border-box;
@@ -897,6 +902,27 @@ div {
   flex-direction: column;
   margin-right: 10px;
 }
+.button-group {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.button {
+  display: inline-block;
+  background-color: #0099ff;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.button:hover {
+  background-color: #0066cc;
+}
+
 
 .instrument,
 .genre {

@@ -52,5 +52,6 @@ urlpatterns = [
     path('past-events/', views.pastEvents, name='past-events'),
     path('current-events/', views.currentEvents, name='current-events'),
     path('musician-update/', views.updateUserMusician, name='musician-update'),
+    path('group-update/', views.updateUserGroup, name='group-update'),
 
 ]
