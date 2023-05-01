@@ -962,14 +962,14 @@ def createInboxMessage(request, pk):
 
             inboxmessage.save()
             messages.success(request, 'Your message was successfully sent!')
-            return redirect('user-profile', pk=recipient.id)
+            if hasattr(recipient, 'group'):
+                return redirect('view-group', pk=recipient.id)
+            elif hasattr(recipient, 'musician'):
+                return redirect('view-musician', pk=recipient.id)
+            else:
+                return redirect('user-profile', pk=recipient.id)
     context = {'recipient': recipient, 'form': form}
-    if hasattr(recipient, 'group'):
-        return redirect('view-group')
-    elif hasattr(recipient, 'musician'):
-        return redirect('view-musician')
-    else:
-        return redirect('user-profile')
+    
     return render(request, 'base/message_form.html', context)
 
 @login_required(login_url="login")
