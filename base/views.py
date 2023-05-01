@@ -963,11 +963,11 @@ def createInboxMessage(request, pk):
             inboxmessage.save()
             messages.success(request, 'Your message was successfully sent!')
             if hasattr(recipient, 'group'):
-                return redirect('view-group', pk=recipient.id)
+                return redirect('view-group', pk=recipient.group.id)
             elif hasattr(recipient, 'musician'):
                 return redirect('view-musician', pk=recipient.musician.id)
             else:
-                return redirect('user-profile', pk=recipient.group.id)
+                return redirect('user-profile', pk=recipient.id)
     context = {'recipient': recipient, 'form': form}
     
     return render(request, 'base/message_form.html', context)
