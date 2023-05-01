@@ -148,6 +148,7 @@
           {% endif %}
           {% if musiciansearching %}
           {% include 'base/musician_feed.html' %}
+          {% include 'pagination.html' with q=musicians custom_range=custom_range %}
           {% endif %}
           
         </div>

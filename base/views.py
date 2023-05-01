@@ -9,7 +9,7 @@ from formtools.wizard.views import SessionWizardView
 from django.db.models import Q
 #from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
-from .utils import searchEvents, paginateEvents
+from .utils import searchEvents, paginateEvents, searchMusicians, paginateMusicians
 #from django.contrib.auth.forms import UserCreationForm
 from .models import Event, Topic, Message, Musician, Group, User, Review, Distances, Skill, InstrumentSkill, InboxMessage, Contract, Demo
 from .forms import EventForm, UserForm, MusicianForm, GroupForm, MyUserCreationForm, GenresForm, InstrumentsForm, InboxMessageForm, ContractForm, DemoForm, AccountTypeForm, UserMusicianForm, UserGroupForm
@@ -384,30 +384,33 @@ def home(request):
 # database
 def searchMusician(request):
     q = request.GET.get('q') if request.GET.get('q') != None else ''
-    musicians = Musician.objects.filter(
-        #User__matches=User.objects.get(first_name__icontains=q) |
-        #User__matches=User.objects.get(last_name__icontains=q) |
-        #Q(User__matches=User.objects.get(first_name__icontains=q)) |
-        #Q(User__matches=User.objects.get(last_name__icontains=q)) |
-        Q(primaryinstrument__icontains=q) |
-        Q(primarygenre__icontains=q) |
-        Q(location__icontains=q)
-    )
-    users = User.objects.filter(
-        Q(first_name__icontains=q) |
-        Q(last_name__icontains=q)
-    ) 
-    for user in users:
-        userMusicians = Musician.objects.filter(
-            Q(user=user)
-        )
-        #for userMusician in userMusicians:
-        musicians |= userMusicians
-    
+    #musicians = Musician.objects.filter(
+    #    #User__matches=User.objects.get(first_name__icontains=q) |
+    #    #User__matches=User.objects.get(last_name__icontains=q) |
+    #    #Q(User__matches=User.objects.get(first_name__icontains=q)) |
+    #    #Q(User__matches=User.objects.get(last_name__icontains=q)) |
+    #    Q(primaryinstrument__icontains=q) |
+    #    Q(primarygenre__icontains=q) |
+    #    Q(location__icontains=q)
+    #)
+    #users = User.objects.filter(
+    #    Q(first_name__icontains=q) |
+    #    Q(last_name__icontains=q)
+    #) 
+    #for user in users:
+    #    userMusicians = Musician.objects.filter(
+    #        Q(user=user)
+    #    )
+    #    #for userMusician in userMusicians:
+    #    musicians |= userMusicians
+    #
+    #eventsearching = ""
+    #groupsearching = ""
+    musiciansearching = "yes"
+    musicians = searchMusicians(request)
+    custom_range, musicians, paginator = paginateMusicians(request, musicians, 4)
     eventsearching = ""
     groupsearching = ""
-    musiciansearching = "yes"
-
     topics = Topic.objects.all()[0:5]
     context = {'musicians': musicians, 'topics': topics, 'eventsearching': eventsearching, 'groupsearching': groupsearching, 'musiciansearching': musiciansearching}
     return render(request, 'base/home.html', context)
