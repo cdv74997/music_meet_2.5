@@ -89,6 +89,9 @@ def calcDistance(musZip,groupZip,maxDistance):
 
         if distance < maxDistance:
             return True
+
+def searchGroup(request):
+    return False
         
 def searchMusicians(request):
     q = request.GET.get('q') if request.GET.get('q') != None else ''
@@ -105,6 +108,8 @@ def searchMusicians(request):
         userMusicians = Musician.objects.filter(
             Q(user=userM)
         )
+        musicians |= userMusicians
+    
 
     return musicians
     #for userMusician in userMusicians:
