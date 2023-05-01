@@ -67,7 +67,7 @@ def registerMusician(request):
                 )
                 instrumentskill=InstrumentSkill.objects.create(
                     owner=user,
-                    name=primaryInstrument,
+                    name=primaryinstrument,
                     primary=True
 
                 )
