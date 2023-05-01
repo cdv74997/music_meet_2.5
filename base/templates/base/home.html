@@ -107,12 +107,12 @@
               {% elif musiciansearching %}
               <h2>Musicians</h2>
               {% if not q %} <!-- If the user didn't make a search query, print number of events -->
-                <p>{{musicians.count}} musicians available</p>
+                <p>{{musicians_count}} musicians available</p>
               {% else %} <!-- Otherwise, tell them how many results there were for their query -->
-                {% if musicians.count == 1 %}
-                  <p>{{musicians.count}} result for "{{q}}"</p>
+                {% if musicians_count == 1 %}
+                  <p>{{musicians_count}} result for "{{q}}"</p>
                 {% else %}
-                  <p>{{musicians.count}} results for "{{q}}"</p>
+                  <p>{{musicians_count}} results for "{{q}}"</p>
                 {% endif %}
               {% endif %}
               {% endif %}

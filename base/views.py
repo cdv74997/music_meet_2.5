@@ -406,13 +406,15 @@ def searchMusician(request):
     #
     #eventsearching = ""
     #groupsearching = ""
-    musiciansearching = "yes"
+    
     musicians = searchMusicians(request)
+    musicians_count = musicians.count
     custom_range, musicians, paginator = paginateMusicians(request, musicians, 4)
+    musiciansearching = "yes"
     eventsearching = ""
     groupsearching = ""
     topics = Topic.objects.all()[0:5]
-    context = {'musicians': musicians, 'topics': topics, 'eventsearching': eventsearching, 'groupsearching': groupsearching, 'musiciansearching': musiciansearching}
+    context = {'musicians': musicians, 'musicians_count': musicians_count, 'topics': topics, 'eventsearching': eventsearching, 'groupsearching': groupsearching, 'musiciansearching': musiciansearching}
     return render(request, 'base/home.html', context)
 
 def searchGroup(request):
