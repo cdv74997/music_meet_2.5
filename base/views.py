@@ -79,7 +79,7 @@ def registerMusician(request):
 
                 subject = "Welcome to MusicMeet"
                 message = "We are glad that you came here to find your music.\nSincerely,\nThe Music Meet Team."
-                messages.success(request, 'Thank you for registering! Please sign in.')
+                
                 send_mail(
                     subject,
                     message,
