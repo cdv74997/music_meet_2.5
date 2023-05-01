@@ -366,7 +366,7 @@ def home(request):
     distanceChoices = Distances.objects.all()
     
     events, topics, event_count, event_messages, message_dict, q, now, distance = searchEvents(request)
-    custom_range, events, paginator = paginateEvents(request, events, 2)
+    custom_range, events, paginator = paginateEvents(request, events, 3)
     unread_messages = InboxMessage.objects.filter(recipient=request.user, is_read=False)
     eventsearching = "yes"
     

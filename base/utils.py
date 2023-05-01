@@ -23,7 +23,7 @@ def paginateEvents(request, events, results):
         events = paginator.page(page)
     except EmptyPage:
         page = paginator.num_pages
-        profiles = paginator.page(page)
+        events = paginator.page(page)
 
     leftIndex = (int(page) - 4)
     if leftIndex < 1: 
@@ -34,6 +34,50 @@ def paginateEvents(request, events, results):
 
     custom_range = range(leftIndex, rightIndex + 1)
     return custom_range, events, paginator
+
+def paginateGroups(request, groups, results):
+    page = request.GET.get('page')
+    paginator = Paginator(groups, results)
+    try:
+        groups = paginator.page(page)
+    except PageNotAnInteger:
+        page = 1
+        groups = paginator.page(page)
+    except EmptyPage:
+        page = paginator.num_pages
+        groups = paginator.page(page)
+
+    leftIndex = (int(page) - 4)
+    if leftIndex < 1:
+        leftIndex = 1
+    rightIndex = (int(page) + 5)
+    if rightIndex > paginator.num_pages:
+        rightIndex = paginator.num_pages
+
+    custom_range = range(leftIndex, rightIndex + 1)
+    return custom_range, groups, paginator
+
+def paginateMusicians(request, musicians, results):
+    page = request.GET.get('page')
+    paginator = Paginator(musicians, results)
+    try:
+        musicians = paginator.page(page)
+    except PageNotAnInteger:
+        page = 1
+        musicians = paginator.page(page)
+    except EmptyPage: 
+        page = paginator.num_pages
+        musicians = paginator.page(page)
+
+    leftIndex = (int(page) - 4)
+    if leftIndex < 1:
+        leftIndex = 1
+    rightIndex = (int(page) + 5)
+    if rightIndex > paginator.num_pages:
+        rightIndex = paginator.num_pages
+
+    custom_range = range(leftIndex, rightIndex + 1)
+    return custom_range, musicians, paginator
 
 
 def calcDistance(musZip,groupZip,maxDistance):
@@ -46,8 +90,24 @@ def calcDistance(musZip,groupZip,maxDistance):
         if distance < maxDistance:
             return True
         
+def searchMusicians(request):
+    q = request.GET.get('q') if request.GET.get('q') != None else ''
+    musicians = Musician.objects.filter(
+        Q(primaryinstrument__icontains=q) |
+        Q(primarygenre__icontains=q) |
+        Q(location__icontains=q)
+    )
+    usersM = User.objects.filter(
+        Q(first_name__icontains=q) |
+        Q(last_name__icontains=q)
+    )
+    for userM in usersM:
+        userMusicians = Musician.objects.filter(
+            Q(user=userM)
+        )
 
-
+    return musicians
+    #for userMusician in userMusicians:
 def searchEvents(request):
     #q = request.GET.get('q') if request.GET.get('q') != None else ''
     
