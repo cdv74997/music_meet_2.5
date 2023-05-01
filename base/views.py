@@ -73,7 +73,7 @@ def registerMusician(request):
                 )
                 genre=Skill.objects.create(
                     owner=user,
-                    name=primaryGenre,
+                    name=primarygenre,
                     primary=True
                 )
 
