@@ -965,9 +965,9 @@ def createInboxMessage(request, pk):
             if hasattr(recipient, 'group'):
                 return redirect('view-group', pk=recipient.id)
             elif hasattr(recipient, 'musician'):
-                return redirect('view-musician', pk=recipient.id)
+                return redirect('view-musician', pk=recipient.musician.id)
             else:
-                return redirect('user-profile', pk=recipient.id)
+                return redirect('user-profile', pk=recipient.group.id)
     context = {'recipient': recipient, 'form': form}
     
     return render(request, 'base/message_form.html', context)
