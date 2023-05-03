@@ -1049,8 +1049,8 @@ def createContract(request, pk):
             contract.group = user.group
             
             contract.save()
-            messagebody = "Hello, " + str(musician) + " you have a new contract offer from " + str(user.group) + ".\n" + "Please respond fill out your response here. Thank you.\n" + "Sincerely,\n" + "The MusicMeet Team"
-            messagebodyEmail = "Hello, " + str(musician) + " you have a new contract offer from " + str(user.group) + ".\n" + "Please respond by viewing the notification for this offer in your inbox in the app. Thank you.\n" + "Sincerely,\n" + "The MusicMeet Team"
+            messagebody = "Hello, " + str(musician) + " you have a new contract offer from " + str(user.group) + ". Please respond fill out your response here. Thank you.\n" + "Sincerely,\n" + "The MusicMeet Team"
+            messagebodyEmail = "Hello, " + str(musician) + " you have a new contract offer from " + str(user.group)  + ". Please respond by viewing the notification for this offer in your inbox in the app. Thank you.\n" + "Sincerely,\n" + "The MusicMeet Team"
             subject = "Music Meet Contract Offer. Offer ID: " + str(contract.contract_id)
             sysUser = User.objects.get(username='MusicMeet')
             groupmessageSubject = "Music Meet Offer Sent. Offer ID: " + str(contract.contract_id)
@@ -1094,7 +1094,7 @@ def createContract(request, pk):
             return redirect('home')
         else:
             messages.error(request, "Your contract returned an error!")
-    context = {'events': events, 'formC': formC}
+    context = {'events': events, 'formC': formC, 'sysUser': sysUser}
     return render(request, 'base/contract-create.html', context)
 
 @login_required(login_url="login")
@@ -1244,8 +1244,9 @@ def viewMusician(request, pk):
 
 @login_required(login_url="login")
 def viewGroup(request, pk):
+    userG = User.objects.get(id=pk)
+    group = userG.group
     unread_messages = InboxMessage.objects.filter(recipient=request.user, is_read=False)
-    group = Group.objects.get(id=pk)
     # Lets just have it to see all their events
     events = Event.objects.filter(host=group.user)
     context = {'group': group, 'events': events, 'unread_count': unread_messages.count()}
