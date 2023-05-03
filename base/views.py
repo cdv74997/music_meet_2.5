@@ -980,6 +980,7 @@ def viewInboxMessage(request, pk):
 
 @login_required(login_url='login')
 def createInboxMessage(request, pk):
+    unread_messages = InboxMessage.objects.filter(recipient=request.user, is_read=False)
     recipient = User.objects.get(id=pk)
     form = InboxMessageForm()
     sender = request.user 
@@ -1001,7 +1002,7 @@ def createInboxMessage(request, pk):
                 return redirect('view-musician', pk=recipient.musician.id)
             else:
                 return redirect('user-profile', pk=recipient.id)
-    context = {'recipient': recipient, 'form': form}
+    context = {'recipient': recipient, 'form': form, 'unread_count': unread_messages.count()}
     
     return render(request, 'base/message_form.html', context)
 
