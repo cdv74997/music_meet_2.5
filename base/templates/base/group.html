@@ -1,119 +1,25 @@
 {% extends 'main.html' %}
 {% load embed_video_tags %}
 {% block content %}
-  <main class="profile-page layout layout--3">
-    <div class="container">
-      <!-- Topics Start 
-      <div class="topics">
-        <div class="topics__header">
-          <h2>Browse Topics</h2>
-        </div>
-        <ul class="topics__list">
-          <li>
-            <a href="/" class="active">All <span>553</span></a>
-          </li>
-          <li>
-            <a href="/">Python <span>232</span></a>
-          </li>
-          <li>
-            <a href="/">JavaScript <span>122</span></a>
-          </li>
-          <li>
-            <a href="/">React <span>57</span></a>
-          </li>
-          <li>
-            <a href="/">Database <span>90</span></a>
-          </li>
-        </ul>
-        <button class="btn btn--link" href="/">
-          More
-          <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
-            <title>chevron-down</title>
-            <path d="M16 21l-13-13h-3l16 16 16-16h-3l-13 13z"></path>
-          </svg>
-        </button>
-      </div>
-       Topics End (the include tag now replaces)-->
-      
-      <!-- Room List Start -->
-      <div class="roomList">
-        <div class="profile">
-          <div class="profile__avatar">
-            <div class="avatar avatar--large active">
-              <img src="{{group.user.avatar.url}}" />
-            </div>
-          </div>
-          <div class="profile__info">
-            
-            <h3>{{group.user.first_name}} {{group.user.last_name}}</h3>
-            
-            <p>{{group.user.email}}</p>
-            
-            
-
-         
-
-          </div>
-          <div class="profile__about">
-            <h3>About</h3>
-            <p>
-              {{group.user.bio}}
-            </p>
-          </div>
-       
-          <div class="profile__about">
-            <h3>Instruments</h3>
-            <br>
-            <p>{{primaryInstrument}}</p>
-            <br>
-            {% if instruments %}
-            {% for instrument in instruments %}
-            <p>
-              {{instrument.name}}
-            </p>
-
-            
-            
-            <br>
-            {% endfor %}
-            {% endif %}
-          </div>
-
-          <div class="profile__about">
-            <h3>Genres</h3>
-            <br>
-            <p>{{primaryGenre}}</p>
-            <br>
-            {% if genres %}
-            {% for genre in genres %}
-            <p>
-              {{genre.name}}
-            </p>
-            
-           
-            
-            {% endfor %}
-            {% endif %}
-          </div>
-
-          
-          <div class="profile__about">
-            <h3>Location</h3>
-            <p>
-              {{group.location}}
-            </p>
-          </div>
-
-          
-          
-        </div>
-
-        <div class="profile__about">
-          <h3>Events</h3>
-          
-        </div>
-      </div>
-      
+<main class="profile-page layout layout--3">
+<div class="group-info container1">
+<div class="profileM">
+    <div class="avatar avatar--large active group-profile-image">
+        <img src="{{group.user.avatar.url}}" />
     </div>
+    <div class="group-profile-info">
+      <h1 class="group-profile-name">{{ group.group_name }}</h1>
+     
+      <h2 class="group-profile-manager">{{group.user.first_name}} {{group.user.last_name}}</h2>
+      <div class="group-profile-details">
+        <p class="group-profile-email">{{ group.user.email }}</p>
+       
+        <p class="group-profile-genre">{{ group.genre }}</p>
+        <p class="group-profile-location">{{ group.location }}</p>
+        <p class="group-profile-events">{{ group.events.count }} Events Hosted</p>
+      </div>
+    </div>
+  </div>
+</div>
   </main>
-{% endblock content %}
+  {% endblock content %}

@@ -7,7 +7,7 @@
     <div class="roomListRoom__header">
 
       <!-- Event host username + their profile picture/avatar -->
-      <a href="{% url 'view-group' event.host.group.id %}" class="roomListRoom__author">
+      <a href="{% url 'view-group' event.host.id %}" class="roomListRoom__author">
         <div class="avatar avatar--small">
           <img src="{{event.host.avatar.url}}" />
         </div>
@@ -43,7 +43,7 @@
       
     </div>
     <div class="roomListRoom__content1">
-      <h3>{{event.occurring}}</h3>
+      <h3 class="dateForEvent">{{event.occurring}}</h3>
     </div>
     <div class="roomListRoom__meta">
       <a href="{% url 'event' event.id %}" class="roomListRoom__joined">

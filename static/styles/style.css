@@ -88,6 +88,11 @@ a {
   color: var(--color-main);
   text-decoration: none;
 }
+.container1 {
+  max-width: 120rem;
+  width: 90%;
+  margin: auto;
+}
 
 /*========== components ==========*/
 .container {
@@ -473,6 +478,11 @@ a {
 .layout {
   margin-top: 2.4rem;
 }
+.layout > .container1 {
+  display: flex;
+  
+  align-items: flex-start;
+}
 
 .layout > .container {
   display: flex;
@@ -824,6 +834,76 @@ div {
   margin: 1rem 0;
   
 
+}
+
+.group-profile {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 50px;
+}
+
+.group-profile-image {
+  margin-right: 30px;
+}
+
+.group-profile-image img {
+  max-width: 250px;
+  border-radius: 50%;
+}
+
+.group-profile-name {
+  font-size: 36px;
+  margin-bottom: 10px;
+}
+
+.group-profile-manager {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.group-profile-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.group-profile-details p {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.group-info {
+  justify-content: center;
+  
+  max-width: 800px;
+  width: 100%;
+  text-align: center;
+  padding: 50px;
+  border-radius: 20px;
+  background-color: var(--color-dark);
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+}
+
+.containergroup {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f5faff;
+}
+.group-profile-details p:last-child {
+  margin-bottom: 0;
+}
+
+.group-profile-details p.group-profile-events {
+  margin-top: 20px;
+  font-weight: bold;
+  color: #888;
+}
+
+
+.dateForEvent {
+  font-size: 20px;
 }
 .roomListRoom__content1 {
   margin: 1rem 0;
