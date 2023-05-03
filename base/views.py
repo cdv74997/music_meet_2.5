@@ -9,7 +9,7 @@ from formtools.wizard.views import SessionWizardView
 from django.db.models import Q
 #from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
-from .utils import searchEvents, paginateEvents, searchMusicians, paginateMusicians
+from .utils import searchEvents, paginateEvents, searchMusicians, paginateMusicians, paginateGroups, searchGroups
 #from django.contrib.auth.forms import UserCreationForm
 from .models import Event, Topic, Message, Musician, Group, User, Review, Distances, Skill, InstrumentSkill, InboxMessage, Contract, Demo
 from .forms import EventForm, UserForm, MusicianForm, GroupForm, MyUserCreationForm, GenresForm, InstrumentsForm, InboxMessageForm, ContractForm, DemoForm, AccountTypeForm, UserMusicianForm, UserGroupForm
@@ -330,20 +330,23 @@ def registerPage(request):
 
     return render(request, 'base/login_register.html', {'form': form})
 
+@login_required(login_url="login")
 def groupEvents(request):
-    
+    unread_messages = InboxMessage.objects.filter(recipient=request.user, is_read=False)
     group = request.user.group
     events = Event.objects.filter(host=request.user).order_by("occurring")
     messages = Message.objects.all()
     message_dict = {}
     for event in events:
         message_dict[event] = len(messages.filter(event_id=event.id))
-    context = {'events': events, 'messages': messages, 'message_dict': message_dict}
+    context = {'events': events, 'messages': messages, 'message_dict': message_dict, 'unread_count': unread_messages.count()}
 
     return render(request, 'base/home.html', context)
 
+@login_required(login_url="login")
 def groupEventSearch(request, pk):
     group = Group.objects.get(id=pk)
+    unread_messages = InboxMessage.objects.filter(recipient=request.user, is_read=False)
     print(group.user.id)
     eventsG = Event.objects.filter(host__id=group.user.id).order_by("occurring")
     print(eventsG)
@@ -355,7 +358,7 @@ def groupEventSearch(request, pk):
     groupeventsearching = "yes"
     for event in eventsG:
         message_dict[event] = len(messages.filter(event__id=event.id))
-    context = {'eventsG': eventsG, 'eventsG_count': eventsG_count,'messages': messages, 'message_dict': message_dict, 'topics': topics, 'custom_range': custom_range,
+    context = {'eventsG': eventsG, 'eventsG_count': eventsG_count,'messages': messages, 'message_dict': message_dict, 'topics': topics, 'custom_range': custom_range, 'unread_count': unread_messages.count(),
     'paginator': paginator, 'group': group, 'groupeventsearching': groupeventsearching}
     
 
@@ -382,6 +385,7 @@ def home(request):
     return render(request, 'base/home.html', context)
 # later on pk will be used as the primary key to query the
 # database
+@login_required(login_url="login")
 def searchMusician(request):
     q = request.GET.get('q') if request.GET.get('q') != None else ''
     #musicians = Musician.objects.filter(
@@ -413,10 +417,12 @@ def searchMusician(request):
     musiciansearching = "yes"
     eventsearching = ""
     groupsearching = ""
+    unread_messages = InboxMessage.objects.filter(recipient=request.user, is_read=False)
     topics = Topic.objects.all()[0:5]
-    context = {'musicians': musicians, 'musicians_count': musicians_count, 'topics': topics, 'eventsearching': eventsearching, 'groupsearching': groupsearching, 'musiciansearching': musiciansearching}
+    context = {'musicians': musicians, 'musicians_count': musicians_count, 'topics': topics, 'eventsearching': eventsearching, 'groupsearching': groupsearching, 'musiciansearching': musiciansearching, 'unread_count': unread_messages.count()}
     return render(request, 'base/home.html', context)
 
+@login_required(login_url="login")
 def searchGroup(request):
     q = request.GET.get('q') if request.GET.get('q') != None else ''
     groups = Group.objects.filter(
@@ -438,18 +444,27 @@ def searchGroup(request):
         )
         #for userMusician in userMusicians:
         groups |= userGroups
-    
+
+    groups = searchGroups(request)
+    groups_count = groups.count
+    custom_range, groups, paginator = paginateMusicians(request, groups, 4)
+    musiciansearching = ""
     eventsearching = ""
     groupsearching = "yes"
+    unread_messages = InboxMessage.objects.filter(recipient=request.user, is_read=False)
+    
 
     topics = Topic.objects.all()[0:5]
-    context = {'topics': topics, 'eventsearching': eventsearching, 'groupsearching': groupsearching, 'groups': groups}
+    context = {'topics': topics, 'eventsearching': eventsearching, 'groupsearching': groupsearching, 'groups': groups, 'groups_count': groups_count, 'unread_count': unread_messages.count()}
     return render(request, 'base/home.html', context)
+
+@login_required(login_url="login")
 def event(request, pk):
     #event = None
     #for i in events:
         #if i['id'] == int(pk):
             #event = i 
+    unread_messages = InboxMessage.objects.filter(recipient=request.user, is_read=False)
     event = Event.objects.get(id=pk)
     # We can query child objects of a specific event here
     # if we take the parent model (Event) to get all the children
@@ -487,6 +502,7 @@ def event(request, pk):
         'event': event, 
         'event_messages': event_messages, 
         'participants': participants,
+        'unread_count': unread_messages.count()
         }
     return render(request, 'base/event.html', context)
 
@@ -591,6 +607,7 @@ def createMusician(request):
 
 @login_required(login_url='login')
 def updateMusician(request, pk):
+    unread_messages = InboxMessage.objects.filter(recipient=request.user, is_read=False)
     musician = Musician.objects.get(id=pk)
     form = MusicianForm(instance=musician)
     if request.user != musician.user:
@@ -613,11 +630,12 @@ def updateMusician(request, pk):
         musician.demo = request.POST.get('demo')
         musician.save()
         return redirect('home')
-    context = {'form': form, 'musician': musician}
+    context = {'form': form, 'musician': musician, 'unread_count': unread_messages.count()}
     return render(request, 'base/create_musician.html', context)
 
 @login_required(login_url='login')
 def createEvent(request):
+    unread_messages = InboxMessage.objects.filter(recipient=request.user, is_read=False)
     user = request.user
     form = EventForm()
     group = request.user.group
@@ -652,7 +670,7 @@ def createEvent(request):
                 messages.error(request,"Enter a date that has not passed");
             #Do not allow user to create event if the date has already passed 
         
-    context = {'form': form, 'topics': topics}
+    context = {'form': form, 'topics': topics, 'unread_count': unread_messages.count()}
     return render(request, 'base/event_form.html', context)
 
 
@@ -660,6 +678,7 @@ def createEvent(request):
 def updateEvent(request, pk):
     event = Event.objects.get(id=pk)
     #print(event.occurring)
+    unread_messages = InboxMessage.objects.filter(recipient=request.user, is_read=False)
     oldflier = event.flier
     form = EventForm(instance=event)
     topics = Topic.objects.all()
@@ -695,51 +714,51 @@ def updateEvent(request, pk):
         
             event.save()
             return redirect('home')
-    context = {'form': form, 'event': event, 'topics': topics}
+    context = {'form': form, 'event': event, 'topics': topics, 'unread_count': unread_messages.count()}
     return render(request, 'base/event_form.html', context)
 
 @login_required(login_url='login')
 def deleteEvent(request, pk):
     event = Event.objects.get(id=pk)
-
+    unread_messages = InboxMessage.objects.filter(recipient=request.user, is_read=False)
     if request.user != event.host:
         return HttpResponse('You are not authorized here!!')
     
     if request.method == 'POST':
         event.delete()
         return redirect('home')
-    return render(request, 'base/delete.html', {'obj':event})
+    return render(request, 'base/delete.html', {'obj':event, 'unread_count': unread_messages.count()})
 
 @login_required(login_url='login')
 def deleteDemo(request, pk):
     demo = Demo.objects.get(id=pk)
-
+    unread_messages = InboxMessage.objects.filter(recipient=request.user, is_read=False)
     if request.user != demo.owner:
         return HttpResponse('You are not authorized here!!')
 
     if request.method == 'POST':
         demo.delete()
         return redirect('home')
-    return render(request, 'base/delete.html', {'obj': event})
+    return render(request, 'base/delete.html', {'obj': event, 'unread_count': unread_messages.count()})
 
 
 
 @login_required(login_url='login')
 def deleteMessage(request, pk):
     message = Message.objects.get(id=pk)
-
+    unread_messages = InboxMessage.objects.filter(recipient=request.user, is_read=False)
     if request.user != message.user:
         return HttpResponse('You are not authorized here!!')
     
     if request.method == 'POST':
         message.delete()
         return redirect('home')
-    return render(request, 'base/delete.html', {'obj': message})
+    return render(request, 'base/delete.html', {'obj': message, 'unread_count': unread_messages.count()})
 
 @login_required(login_url='login')
 def updateUser(request):
     user = request.user
-    
+    unread_messages = InboxMessage.objects.filter(recipient=request.user, is_read=False)
     form = UserForm(instance=user)
     try:
         musician = Musician.objects.get(user=user)
@@ -766,27 +785,31 @@ def updateUser(request):
         else:
             messages.error(request, 'form not valid')
     
-    context = {'form': form, 'musician': musician, 'group': group}
+    context = {'form': form, 'musician': musician, 'group': group, 'unread_count': unread_messages.count()}
     return render(request, 'base/update_user.html', context)
 
 def topicsPage(request):
+    unread_messages = InboxMessage.objects.filter(recipient=request.user, is_read=False)
     q = request.GET.get('q') if request.GET.get('q') != None else ''
+    
     topics = Topic.objects.filter(name__icontains=q)
-    return render(request, 'base/topics.html', {'topics' : topics})
+    return render(request, 'base/topics.html', {'topics' : topics, 'unread_count': unread_messages.count()})
 
 def activityPage(request):
     event_messages = Message.objects.all()
+    
     return render(request, 'base/activity.html', {'event_messages' : event_messages})
 
 @login_required(login_url='login')
 def userAccount(request):
     user = request.user
+    unread_messages = InboxMessage.objects.filter(recipient=request.user, is_read=False)
     if hasattr(user, 'group'):
         group_name = user.group.group_name
         genre = user.group.genre
         location = user.group.location
         events = Event.objects.filter(host__id=user.id)
-        context = {'group_name': group_name, 'genre': genre, 'location': location, 'events': events, 'user': user}
+        context = {'group_name': group_name, 'genre': genre, 'location': location, 'events': events, 'user': user, 'unread_count': unread_messages.count()}
         return render(request, 'base/group_account.html', context)
     else:
         now = datetime.date.today()
@@ -800,22 +823,23 @@ def userAccount(request):
         genres = user.skill_set.all()
         instruments = user.instrumentskill_set.all()
         demos = user.demo_set.all()
-        context = {'user': user, 'genres': genres, 'instruments': instruments, 'demos': demos, 'groups': groups}
+        context = {'user': user, 'genres': genres, 'instruments': instruments, 'demos': demos, 'groups': groups, 'unread_count': unread_messages.count()}
         return render(request, 'base/musician_account.html', context)
 
 @login_required(login_url='login')
 def inbox(request):
     user = request.user
     messageRequests = user.inboxmessages.all()
+    unread_messages = InboxMessage.objects.filter(recipient=request.user, is_read=False)
     unreadCount = messageRequests.filter(is_read=False).count()
-    context = {'messageRequests': messageRequests, 'unreadCount': unreadCount}
+    context = {'messageRequests': messageRequests, 'unreadCount': unreadCount, 'unread_count': unread_messages.count()}
     return render(request, 'base/inbox.html', context)
 
 @login_required(login_url='login')
 def addGenre(request):
     user = request.user
     form = GenresForm()
-
+    unread_messages = InboxMessage.objects.filter(recipient=request.user, is_read=False)
     if request.method == "POST":
         form = GenresForm(request.POST)
         if form.is_valid():
@@ -825,7 +849,7 @@ def addGenre(request):
             messages.success(request, 'Genre was added successfully!')
             return redirect('account')
     
-    context = {'form': form}
+    context = {'form': form, 'unread_count': unread_messages.count()}
     return render(request, 'base/genre_form.html', context)
 
 @login_required(login_url='login')
@@ -833,7 +857,7 @@ def updateGenre(request, pk):
     user = request.user
     genre = user.skill_set.get(id=pk)
     form = GenresForm(instance=genre)
-
+    unread_messages = InboxMessage.objects.filter(recipient=request.user, is_read=False)
     if request.method == "POST":
         form = GenresForm(request.POST, instance=genre)
         if form.is_valid():
@@ -845,13 +869,14 @@ def updateGenre(request, pk):
             messages.success(request, 'Genre was revised successfully')
             return redirect('account')
 
-    context = {'form': form}
+    context = {'form': form, 'unread_count': unread_messages.count()}
     return render(request, 'base/genre_form.html', context)
 
 @login_required(login_url='login')
 def deleteGenre(request, pk):
     user = request.user
     genre = user.skill_set.get(id=pk)
+    unread_messages = InboxMessage.objects.filter(recipient=request.user, is_read=False)
     if request.method == "POST":
         if genre.primary:
             messages.error(request, "You are not allowed to delete your primary Genre!")
@@ -860,14 +885,14 @@ def deleteGenre(request, pk):
             genre.delete()
             messages.success(request, "Genre was successfully deleted!")
         return redirect('account')
-    context = {'obj': genre}
+    context = {'obj': genre, 'unread_count': unread_messages.count()}
     return render(request, 'base/delete.html', context)
 
 @login_required(login_url='login')
 def addDemo(request):
     user = request.user
     form = DemoForm()
-
+    unread_messages = InboxMessage.objects.filter(recipient=request.user, is_read=False)
     if request.method == 'POST':
         form = DemoForm(request.POST, request.FILES)
         title=request.POST.get('title')
@@ -886,7 +911,7 @@ def addDemo(request):
         
             
 
-    context = {'form': form}
+    context = {'form': form, 'unread_count': unread_messages.count()}
     return render(request, 'base/demo.html', context)
 
 
@@ -894,7 +919,7 @@ def addDemo(request):
 def addInstrument(request):
     user = request.user 
     form = InstrumentsForm()
-
+    unread_messages = InboxMessage.objects.filter(recipient=request.user, is_read=False)
     if request.method == "POST":
         form = InstrumentsForm(request.POST)
         if form.is_valid():
@@ -904,7 +929,7 @@ def addInstrument(request):
             messages.success(request, 'Instrument was added successfully!')
             return redirect('account')
 
-    context = {'form': form}
+    context = {'form': form, 'unread_count': unread_messages.count()}
     return render(request, 'base/instrument_form.html', context)
 
 @login_required(login_url='login')
@@ -912,7 +937,7 @@ def updateInstrument(request, pk):
     user = request.user
     instrument = user.instrumentskill_set.get(id=pk)
     form = InstrumentsForm(instance=instrument)
-
+    unread_messages = InboxMessage.objects.filter(recipient=request.user, is_read=False)
     if request.method == "POST":
         form = InstrumentsForm(request.POST, instance=instrument)
         if form.is_valid():
@@ -923,13 +948,14 @@ def updateInstrument(request, pk):
             messages.success(request, 'Instrument was revised successfully!')
             return redirect('account')
 
-    context = {'form': form}
+    context = {'form': form, 'unread_count': unread_messages.count()}
     return render(request, 'base/instrument_form.html', context)
 
 @login_required(login_url='login')
 def deleteInstrument(request, pk):
     user = request.user
     instrument = user.instrumentskill_set.get(id=pk)
+    unread_messages = InboxMessage.objects.filter(recipient=request.user, is_read=False)
     if request.method == "POST":
         if instrument.primary:
             messages.error(request, "You are not allowed to delete your primary instrument!")
@@ -937,18 +963,19 @@ def deleteInstrument(request, pk):
             instrument.delete()
             messages.success(request, "Instrument was successfully deleted!")
         return redirect('account')
-    context = {'obj': instrument}
+    context = {'obj': instrument, 'unread_count': unread_messages.count()}
     return render(request, 'base/delete.html', context)
     
 @login_required(login_url='login')
 def viewInboxMessage(request, pk):
     user = request.user
     inboxmessage = user.inboxmessages.get(id=pk)
+    unread_messages = InboxMessage.objects.filter(recipient=request.user, is_read=False)
     if inboxmessage.is_read == False:
         inboxmessage.is_read = True
         inboxmessage.save()
 
-    context = {'message': inboxmessage}
+    context = {'message': inboxmessage, 'unread_count': unread_messages.count()}
     return render(request, 'base/message.html', context)
 
 @login_required(login_url='login')
@@ -1190,8 +1217,9 @@ def acceptContract(request, pk):
     return render(request, 'base/contract-accept.html', context)
 
 
-
+@login_required(login_url="login")
 def viewMusician(request, pk):
+    unread_messages = InboxMessage.objects.filter(recipient=request.user, is_read=False)
     musician = Musician.objects.get(id=pk)
     demos = Demo.objects.filter(owner__id=musician.user.id)
     # We will only have one primary instrument
@@ -1210,14 +1238,16 @@ def viewMusician(request, pk):
     except:
         contractable = False
     
-    context = {'musician': musician, 'contractable': contractable, 'instruments': instruments,'genres': genres, 'demos': demos}
+    context = {'musician': musician, 'contractable': contractable, 'instruments': instruments,'genres': genres, 'demos': demos, 'unread_count': unread_messages.count()}
     return render(request, 'base/musician.html', context)
 
+@login_required(login_url="login")
 def viewGroup(request, pk):
+    unread_messages = InboxMessage.objects.filter(recipient=request.user, is_read=False)
     group = Group.objects.get(id=pk)
     # Lets just have it to see all their events
     events = Event.objects.filter(host=group.user)
-    context = {'group': group, 'events': events}
+    context = {'group': group, 'events': events, 'unread_count': unread_messages.count()}
     return render(request, 'base/group.html', context)
 
 @login_required(login_url="login")

@@ -90,8 +90,24 @@ def calcDistance(musZip,groupZip,maxDistance):
         if distance < maxDistance:
             return True
 
-def searchGroup(request):
-    return False
+def searchGroups(request):
+    q = request.GET.get('q') if request.GET.get('q') != None else ''
+    groups = Group.objects.filter(
+        Q(group_name__icontains=q) |
+        Q(genre__icontains=q) |
+        Q(location__icontains=q)
+    )
+    usersG = User.objects.filter(
+        Q(first_name__icontains=q) |
+        Q(last_name__icontains=q)
+    )
+    for userG in usersG:
+        userGroups = Group.objects.filter(
+            Q(user=userG)
+        )
+        groups |= userGroups
+
+    return groups
         
 def searchMusicians(request):
     q = request.GET.get('q') if request.GET.get('q') != None else ''
