@@ -791,9 +791,9 @@ def updateUser(request):
 def topicsPage(request):
     unread_messages = InboxMessage.objects.filter(recipient=request.user, is_read=False)
     q = request.GET.get('q') if request.GET.get('q') != None else ''
-    
-    topics = Topic.objects.filter(name__icontains=q)
-    return render(request, 'base/topics.html', {'topics' : topics, 'unread_count': unread_messages.count()})
+    now = datetime.date.today()
+    topics = Topic.objects.filter(name__icontains=q).annotate(event_count=Count('event', filter=Q(event__occurring__gte=now)))
+    return render(request, 'base/topics.html', {'topics' : topics, 'unread_count': unread_messages.count(), 'now': now})
 
 def activityPage(request):
     event_messages = Message.objects.all()

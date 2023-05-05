@@ -14,7 +14,9 @@
       </li>
       {% for topic in topics %}
       <li>
-        <a href="{% url 'home' %}?q={{topic.name}}">{{topic.name}}<span>{{topic.event_set.all.count}}</span></a>
+        
+        <a href="{% url 'home' %}?q={{topic.name}}">{{topic.name}}<span>{{ topic.event_count }}</span></a>
+        
       </li>
       {% endfor %}
     </ul>
