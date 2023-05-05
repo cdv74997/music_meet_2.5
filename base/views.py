@@ -53,6 +53,7 @@ def registerMusician(request):
                 primarygenre=form.cleaned_data['primarygenre']
                 user=User.objects.create(
                     email=form.cleaned_data['email'],
+                    username=form.cleaned_data['username'],
                     password=make_password(form.cleaned_data['password']),
                     first_name=form.cleaned_data['first_name'],
                     last_name=form.cleaned_data['last_name'],
@@ -148,6 +149,7 @@ def registerGroup(request):
                 group_name = form.cleaned_data['group_name']
                 user=User.objects.create(
                     email=form.cleaned_data['email'],
+                    username=form.cleaned_data['username'],
                     password=make_password(form.cleaned_data['password']),
                     first_name=form.cleaned_data['first_name'],
                     last_name=form.cleaned_data['last_name'],

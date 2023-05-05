@@ -15,7 +15,12 @@
         <div class="profile-info">
           <h1 class="name">{{musician.user.first_name}} {{musician.user.last_name}}</h1>
           <p class="email">{{musician.user.email}}</p>
+          {% if request.user.group %}
+
           <div class="button-group">
+            {% else %}
+          <div class="button-group1">
+            {% endif %}
             <a class="btnTwo btnTwo--main" href="{% url 'create-message' musician.user.id %}">
               <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
                 <title>edit</title>

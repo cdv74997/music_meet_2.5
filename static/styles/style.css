@@ -627,10 +627,14 @@ a {
   margin: auto;
   text-align: center;
 }
+#distance {
+  color: white;
+}
 .shorten2 {
   max-width: 50%;
   display: inline-flex;
   margin: auto;
+  color: white;
   text-align: center;
   background: var(--color-dark-light);
   border-radius: 5px;
