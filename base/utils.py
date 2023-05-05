@@ -131,8 +131,18 @@ def searchMusicians(request):
     #for userMusician in userMusicians:
 def searchEvents(request):
     q = request.GET.get('q') if request.GET.get('q') != None else ''
-    
-
+    if (hasattr(request.user, 'musician')):
+        filterDistanceParam = request.GET.get('distance')
+        if filterDistanceParam:
+            if int(filterDistanceParam) >= 10000:
+                filterDistanceParam = 10000  # treat "60+" as None, indicating no distance filter
+            request.session['distance_filter'] = int(filterDistanceParam)
+        if filterDistanceParam is not None:
+            logging.warning('test')
+            distance = int(filterDistanceParam)
+        else:
+            distance = 10000
+        distance = request.session.get('distance_filter', 10000)
     if (hasattr(request.user, 'musician') and (not q)):
         email = request.user.email
         musician = request.user.musician
@@ -144,16 +154,7 @@ def searchEvents(request):
         primaryinstrument = musician.primaryinstrument
         instruments = request.user.instrumentskill_set.all()
         musicianZip = musician.location
-        filterDistanceParam = request.GET.get('distance')
-        if filterDistanceParam:
-            if int(filterDistanceParam) >= 10000:
-                filterDistanceParam = 10000  # treat "60+" as None, indicating no distance filter
-            request.session['distance_filter'] = int(filterDistanceParam)
-        if filterDistanceParam is not None:
-            logging.warning('test')
-            distance = int(filterDistanceParam)
-        else:
-            distance = 10000
+        
 
         print("---------------", distance)
         

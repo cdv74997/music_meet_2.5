@@ -18,15 +18,17 @@
         <div class="profile-info">
           <h1 class="name">{{user.first_name}} {{user.last_name}}</h1>
           <p class="email">{{user.email}}</p>
-          <div class="button-group">
-            <a href="{% url 'musician-update' %}" class="btn btn--main btn--pill">
-              <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
-                <title>edit</title>
-                <path d="M27.778 4.222c-1.52-1.52-3.333-1.172-4.222 0l-2.556 2.556 4 4 2.556-2.556c1.171-1.171 1.171-3.071 0-4.242zM19.354 12.646l-15.111 15.111v2.243h2.243l15.111-15.111-2.243-2.243zM3.111 29.889v-6.364l6.364 6.364h-6.364z"></path>
-              </svg>
-              
-      
-              Edit User Profile</a>
+          <div class="button-group1">
+            
+              <a class="btnFour btnFour--main" href="{% url 'musician-update' %}">
+                <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+                  <title>edit</title>
+                  <path d="M27.778 4.222c-1.52-1.52-3.333-1.172-4.222 0l-2.556 2.556 4 4 2.556-2.556c1.171-1.171 1.171-3.071 0-4.242zM19.354 12.646l-15.111 15.111v2.243h2.243l15.111-15.111-2.243-2.243zM3.111 29.889v-6.364l6.364 6.364h-6.364z"></path>
+                </svg>
+                
+        
+                Edit Profile
+              </a>
             
           
           </div>

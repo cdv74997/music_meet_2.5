@@ -352,7 +352,11 @@ def groupEventSearch(request, pk):
     print(eventsG)
     eventsG_count = eventsG.count
     messages = Message.objects.filter(user=group.user).order_by("created")
+    now = datetime.date.today()
     topics = Topic.objects.all()[0:5]
+    for topic in topics:
+        event_count = topic.event_set.filter(occurring__gte=now, booked=False).count()
+        topic.eventfor = event_count
     custom_range, eventsG, paginator = paginateEvents(request, eventsG, 8)
     message_dict = {}
     groupeventsearching = "yes"
@@ -373,13 +377,17 @@ def home(request):
     custom_range, events, paginator = paginateEvents(request, events, 3)
     unread_messages = InboxMessage.objects.filter(recipient=request.user, is_read=False)
     eventsearching = "yes"
+    topics = Topic.objects.all()[0:5]
+    for topic in topics:
+        event_count = topic.event_set.filter(occurring__gte=now, booked=False).count()
+        topic.eventfor = event_count
     
     
     
     # Create an object containing the groups object, musicians object, etc.:
     context = {'events': events, 'topics': topics, 'unread_count': unread_messages.count(),
      'event_count': event_count, 'event_messages': event_messages, 'message_dict': message_dict,
-     'q': q, 'paginator': paginator, 'custom_range': custom_range, 'eventsearching': eventsearching, 'now': now, 'distance': distance,'distanceChoices': distanceChoices}
+     'q': q, 'paginator': paginator, 'custom_range': custom_range, 'eventsearching': eventsearching, 'now': now, 'distance': distance,'distanceChoices': distanceChoices, 'topics': topics}
 
     # Load the base/home.html template, send the context object to the template, and output the HTML that is rendered by the template:
     return render(request, 'base/home.html', context)
@@ -418,7 +426,11 @@ def searchMusician(request):
     eventsearching = ""
     groupsearching = ""
     unread_messages = InboxMessage.objects.filter(recipient=request.user, is_read=False)
+    now = datetime.date.today()
     topics = Topic.objects.all()[0:5]
+    for topic in topics:
+        event_count = topic.event_set.filter(occurring__gte=now, booked=False).count()
+        topic.eventfor = event_count
     context = {'musicians': musicians, 'musicians_count': musicians_count, 'topics': topics, 'eventsearching': eventsearching, 'groupsearching': groupsearching, 'musiciansearching': musiciansearching, 'unread_count': unread_messages.count()}
     return render(request, 'base/home.html', context)
 
@@ -453,8 +465,11 @@ def searchGroup(request):
     groupsearching = "yes"
     unread_messages = InboxMessage.objects.filter(recipient=request.user, is_read=False)
     
-
+    now = datetime.date.today()
     topics = Topic.objects.all()[0:5]
+    for topic in topics:
+        event_count = topic.event_set.filter(occurring__gte=now, booked=False).count()
+        topic.eventfor = event_count
     context = {'topics': topics, 'eventsearching': eventsearching, 'groupsearching': groupsearching, 'groups': groups, 'groups_count': groups_count, 'unread_count': unread_messages.count()}
     return render(request, 'base/home.html', context)
 
@@ -510,7 +525,11 @@ def userProfile(request, pk):
     user = User.objects.get(id=pk)
     events = user.event_set.all()
     event_messages = user.message_set.all()
+    now = datetime.date.today()
     topics = Topic.objects.all()
+    for topic in topics:
+        event_count = topic.event_set.filter(occurring__gte=now, booked=False).count()
+        topic.eventfor = event_count
     message_dict = {}
     if user.account_type=="M":
         musician = Musician.objects.get(user_id=pk)
@@ -639,7 +658,11 @@ def createEvent(request):
     user = request.user
     form = EventForm()
     group = request.user.group
+    now = datetime.date.today()
     topics = Topic.objects.all()
+    for topic in topics:
+        event_count = topic.event_set.filter(occurring__gte=now, booked=False).count()
+        topic.eventfor = event_count
     if request.method == 'POST':
         form = EventForm(request.POST, request.FILES)
         topic_name = group.genre
@@ -681,7 +704,11 @@ def updateEvent(request, pk):
     unread_messages = InboxMessage.objects.filter(recipient=request.user, is_read=False)
     oldflier = event.flier
     form = EventForm(instance=event)
+    now = datetime.date.today()
     topics = Topic.objects.all()
+    for topic in topics:
+        event_count = topic.event_set.filter(occurring__gte=now, booked=False).count()
+        topic.eventfor = event_count
     if request.user != event.host:
         return HttpResponse('You are not authorized here!!')
 
@@ -792,7 +819,10 @@ def topicsPage(request):
     unread_messages = InboxMessage.objects.filter(recipient=request.user, is_read=False)
     q = request.GET.get('q') if request.GET.get('q') != None else ''
     now = datetime.date.today()
-    topics = Topic.objects.filter(name__icontains=q).annotate(event_count=Count('event', filter=Q(event__occurring__gte=now)))
+    topics = Topic.objects.filter(name__icontains=q)
+    for topic in topics:
+        event_count = topic.event_set.filter(occurring__gte=now, booked=False).count()
+        topic.eventfor = event_count
     return render(request, 'base/topics.html', {'topics' : topics, 'unread_count': unread_messages.count(), 'now': now})
 
 def activityPage(request):

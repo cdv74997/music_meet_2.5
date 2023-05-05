@@ -129,6 +129,24 @@ a {
   
   
 }
+.btnFour {
+  background-color: skyblue;
+  color: black;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  
+  gap: 1rem;
+  cursor: pointer;
+  transition: all ease-in-out 0.3s;
+  padding: 1rem 2rem;
+  border-radius: 5px;
+  box-shadow: 1px 1px 3px 1px rgba(0, 0, 0, 0.15);
+  font-weight: 500;
+}
+.btnFour:hover {
+  background-color: greenyellow;
+}
 
 .btnTwo {
   background-color: skyblue;
@@ -995,6 +1013,11 @@ div {
 .button-group {
   display: flex;
   justify-content: space-between;
+  margin-bottom: 20px;
+}
+.button-group1 {
+  display: flex;
+  justify-content: center;
   margin-bottom: 20px;
 }
 
