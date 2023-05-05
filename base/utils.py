@@ -130,9 +130,10 @@ def searchMusicians(request):
     return musicians
     #for userMusician in userMusicians:
 def searchEvents(request):
-    #q = request.GET.get('q') if request.GET.get('q') != None else ''
+    q = request.GET.get('q') if request.GET.get('q') != None else ''
     
-    try:
+
+    if (hasattr(request.user, 'musician') and (not q)):
         email = request.user.email
         musician = request.user.musician
         primarygenre = musician.primarygenre
@@ -256,7 +257,7 @@ def searchEvents(request):
         
             #groups |= userGroups
 
-    except AttributeError:
+    else:
         distance = 10000
         # this is how our search is extracted from what is passed to url
         q = request.GET.get('q') if request.GET.get('q') != None else ''
