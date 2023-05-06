@@ -1,0 +1,27 @@
+{% extends 'main.html' %}
+{% block content %}
+
+<main class="formPage my-xl">
+    <div class="content-box">
+        <div class="formWrapper">
+            <h3>Termination Confirmation For Offer With  {{contract.group.group_name}} For Venue {{contract.event.name}}</h3>
+          
+            <p>You have rejected an offer to perform with {{contract.group.group_name}}</p>
+            <p>Outlined Below is Some Iternerary For Your Declined Offer</p>
+            <br>
+            <p>Starting time: {{contract.start_time}}</p>
+            <p>Ending time: {{contract.end_time}}</p>
+            <p>Pay: ${{contract.pay}} per hour</p>
+            <br>
+            <p>Date Of Event: {{contract.event.occurring|date:"m/d/Y"}}</p>
+            
+           <br>
+           <a href="{% url 'home' %}">Return</a>
+          
+         
+
+          
+        </div>
+    </div>
+</main>
+{% endblock content %}

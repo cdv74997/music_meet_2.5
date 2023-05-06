@@ -232,7 +232,7 @@ class Distances(models.Model):
 
 class Demo(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
-    title = models.CharField(max_length=100, db_column="name")
+    name = models.CharField(max_length=100, db_column="name")
     added = models.DateTimeField(auto_now_add=True)
     
     #video=models.FileField(upload_to="video/%y")

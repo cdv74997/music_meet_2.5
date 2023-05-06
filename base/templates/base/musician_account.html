@@ -32,17 +32,25 @@
             
           
           </div>
+          {% if eventsPerformed %}
+          {% if eventsPerformed.count == 1 %}
+          <h2>{{eventsPerformed.count}}  Event Performed At</h2>
+          {% else %}
+          <h2>Events Performed At: {{eventsPerformed.count}}</h2>
+          {% endif %}
+          {% endif %}
           
           {% if groups %}
-          <h3>Groups Performed With</h3>
-          <br>
+          <h2>Groups Performed With:</h2>
+          
           {% for group in groups %}
           <h4>{{group.group_name}}</h4>
-          <br>
+          
           {% endfor %}
           {% endif %}
           <ul class="instruments">
             <h3>Instruments</h3>
+            
             {% if instruments %}
             {% for instrument in instruments %}
             <li>
@@ -50,13 +58,15 @@
               <a class="tag tag--pill tag--main settings__btn" href="{% url 'update-instrument' instrument.id %}"><i class="im im-edit"></i>Edit</a>
             {% if not instrument.primary %}
             &nbsp; &nbsp; &nbsp; 
-            <a class="tag tag--pill tag--main settings__btn" href="{% url 'delete-instrument' instrument.id %}?next=/account"><i class="im im-x-mark-circle-o"></i>Delete</a>
+            <a class="tag tag--pill tag--main settings__btn red" href="{% url 'delete-instrument' instrument.id %}?next=/account"><i class="im im-x-mark-circle-o"></i>Delete</a>
             {% endif %}
+            
           </li>
             
             
             {% endfor %}
             {% endif %}
+            <a class="tag tag--pill tag--sub settings__btn tag--lg lime" href="{% url 'add-instrument' %}"><i class="im im-plus"></i>Add Instrument</a>
            
           </ul>
           <ul class="genres">
@@ -68,13 +78,14 @@
               <a class="tag tag--pill tag--main settings__btn" href="{% url 'update-genre' genre.id %}"><i class="im im-edit"></i>Edit</a>
             {% if not genre.primary %}
             &nbsp; &nbsp; &nbsp; 
-            <a class="tag tag--pill tag--main settings__btn" href="{% url 'delete-genre' genre.id %}?next=/account"><i class="im im-x-mark-circle-o"></i>Delete</a>
+            <a class="tag tag--pill tag--main settings__btn red" href="{% url 'delete-genre' genre.id %}?next=/account"><i class="im im-x-mark-circle-o"></i>Delete</a>
             {% endif %}
           </li>
             
             
             {% endfor %}
             {% endif %}
+            <a class="tag tag--pill tag--sub settings__btn tag--lg lime" href="{% url 'add-genre' %}"><i class="im im-plus"></i>Add Genre</a>
           </ul>
           {% if demos %}
           <h3>Demos</h3>
@@ -89,7 +100,7 @@
                    <source src="{{demo.demovid.url}}" type="video/mp4" />
             </video>
             <h3 class="text-center mt-2 mb-2">Created On: {{demo.added}}</h3>
-            <a class="tag tag--pill tag--sub settings__btn tag--lg red" href="{% url 'delete-demo' demo.id %}"><i class="im im-plus"></i>Delete Demo</a>
+            <a class="tag tag--pill tag--sub settings__btn tag--lg red" href="{% url 'delete-demo' demo.id %}?next=/account"><i class="im im-plus"></i>Delete Demo</a>
             </div>
             {% endfor %}
           

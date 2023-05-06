@@ -774,9 +774,10 @@ def deleteDemo(request, pk):
         return HttpResponse('You are not authorized here!!')
 
     if request.method == 'POST':
+        messages.success(request, "Demo was successfully deleted!")
         demo.delete()
-        return redirect('home')
-    return render(request, 'base/delete.html', {'obj': event, 'unread_count': unread_messages.count()})
+        return redirect('account')
+    return render(request, 'base/delete.html', {'obj': demo, 'unread_count': unread_messages.count()})
 
 
 
@@ -865,7 +866,7 @@ def userAccount(request):
         genres = user.skill_set.all()
         instruments = user.instrumentskill_set.all()
         demos = user.demo_set.all()
-        context = {'user': user, 'genres': genres, 'instruments': instruments, 'demos': demos, 'groups': groups, 'unread_count': unread_messages.count()}
+        context = {'user': user, 'genres': genres, 'instruments': instruments, 'demos': demos, 'groups': groups, 'unread_count': unread_messages.count(), 'eventsPerformed': events}
         return render(request, 'base/musician_account.html', context)
 
 @login_required(login_url='login')
@@ -937,15 +938,15 @@ def addDemo(request):
     unread_messages = InboxMessage.objects.filter(recipient=request.user, is_read=False)
     if request.method == 'POST':
         form = DemoForm(request.POST, request.FILES)
-        title=request.POST.get('title')
+        name=request.POST.get('name')
 
         demovid=request.FILES.get('demovid')
-        print(title)
+       
         if form.is_valid():
             demo = form.save(commit=False)
             Demo.objects.create(
                 owner=user,
-                title=title,
+                name=name,
                 demovid=demovid,
             )
             messages.success(request, 'Demo was added successfully!')
@@ -1153,10 +1154,10 @@ def rejectContract(request, pk):
     user = request.user
     contract = Contract.objects.get(contract_id=pk)
     contract.delete()
-    musicianmessagesubject = "Offer ID:" + str(contract.contract_id) + " Termination Confirmation"
-    musicianmessagebody = "Hello, " + str(user) + ".\n" + "This message confirms that you have rejected the offer made by " + str(contract.group) + ". " + "Thank you.\n" + "Sincerely,\n" + "The MusicMeet Team"
-    groupmessageSubject = "Offer ID: " + str(contract.contract_id) + " Rejected"
-    groupmessagebody = "Hello, " + str(contract.group) + ".\n" + "This notice confirms that " + str(user) + " has rejected your contract offer. The offer is terminated. Thank you. \nSincerely,\nThe MusicMeet Team"  
+    musicianmessagesubject = "Offer Termination Confirmation, ID:" + str(contract.contract_id)
+    musicianmessagebody = "Hello, " + str(user.first_name) + " " + str(user.last_name) + ".\n" + "This message confirms that you have rejected the offer made by " + str(contract.group) + ". " + "Thank you.\n" + "Sincerely,\n" + "The MusicMeet Team"
+    groupmessageSubject = "Offer Rejected, ID: " + str(contract.contract_id)
+    groupmessagebody = "Hello, " + str(contract.group) + ".\n" + "This notice confirms that " + str(user.first_name) + " " + str(user.last_name) + " has rejected your contract offer. The offer is terminated. Thank you. \nSincerely,\nThe MusicMeet Team"  
     sysUser = User.objects.get(username='MusicMeet')
     InboxMessage.objects.create(
         sender=sysUser,
@@ -1218,8 +1219,8 @@ def acceptContract(request, pk):
     contract.save()
     message.save()
     subject = "Confirmation For Contract With " + str(contract.group.group_name) + " For Venue " + str(contract.event.name) + " Contract ID: " + str(contract.contract_id)
-    messagebodyEmail = "This email is to confirm that you, " + str(user.first_name) + " " + str(user.last_name) + " have agreed to perform with " + str(contract.group.group_name) + " on the day of " + str(contract.event.occurring) + " at " + str(contract.start_time) + " until " + str(contract.end_time) + " for a rate of $" + str(contract.pay) + " per hour.\n" + "The event will be held at " + str(contract.location) + ".\n" + " Please make note of the terms in this binding agreement outlined here. " + str(contract.description)
-    messagebody = "This message is to confirm that you, " + str(user.first_name) + " " + str(user.last_name) + " have agreed to perform with " + str(contract.group.group_name) + " on the day of " + str(contract.event.occurring) + " at " + str(contract.start_time) + " until " + str(contract.end_time) + " for a rate of $" + str(contract.pay) + " per hour.\n" + "The event will be held at " + str(contract.location) + ".\n" + " Please make note of the terms in this binding agreement outlined here. " + str(contract.description)
+    messagebodyEmail = "This email is to confirm that you, " + str(user.first_name) + " " + str(user.last_name) + " have agreed to perform with " + str(contract.group.group_name) + ".\nOutlined below is the iternary for your upcoming performance.\n\n" + "Starting time: "  + str(contract.start_time) + "\n" + "Ending time: " + str(contract.end_time) + "\nPay: $" + str(contract.pay) + " per hour.\n\n" + "Date Of Event: " + str(contract.event.occurring.strftime("%m/%d/%Y")) + "\nLocation " + str(contract.location) + ".\n" + " Please make note of any additional terms in this binding agreement outlined here:\n" + str(contract.description) + "\nSincerely,\nThe MusicMeet Team" 
+    messagebody = "This message is to confirm that you, " + str(user.first_name) + " " + str(user.last_name) + " have agreed to perform with " + str(contract.group.group_name) + ".\nOutlined below is the iternary for your upcoming performance.\n\n" + "Starting time: "  + str(contract.start_time) + "\n" + "Ending time: " + str(contract.end_time) + "\nPay: $" + str(contract.pay) + " per hour.\n\n" + "Date Of Event: " + str(contract.event.occurring.strftime("%m/%d/%Y")) + "\nLocation " + str(contract.location) + ".\n" + " Please make note of any additional terms in this binding agreement outlined here:\n" + str(contract.description) + "\nSincerely,\nThe MusicMeet Team"
     groupmessageSubject = "Confirmation of Contract Acceptance For " + str(user.first_name) + " " + str(user.last_name) + " For Venue " + str(contract.event.name) + " Contract ID: " + str(contract.contract_id)
     groupmessagebodyEmail = "This email confirms that "+ str(user.first_name) + " " + str(user.last_name) + " has accepted your offer."
     groupmessagebody = "This message confirms that "+ str(user.first_name) + " " + str(user.last_name) + " has accepted your offer."
@@ -1227,7 +1228,7 @@ def acceptContract(request, pk):
     InboxMessage.objects.create(
         sender=sysUser,
         recipient=user,
-        name=contract.group.user.first_name + " " + contract.group.user.last_name,
+        name="MusicMeet",
         subject = subject,
         body = messagebody,
         contract_related = False,
@@ -1236,7 +1237,7 @@ def acceptContract(request, pk):
     InboxMessage.objects.create(
         sender=sysUser,
         recipient=contract.group.user,
-        name=user.first_name + " " + user.last_name,
+        name="MusicMeet",
         subject = groupmessageSubject,
         body = groupmessagebody,
         contract_related = False,
@@ -1265,7 +1266,15 @@ def viewMusician(request, pk):
     unread_messages = InboxMessage.objects.filter(recipient=request.user, is_read=False)
     musician = Musician.objects.get(id=pk)
     demos = Demo.objects.filter(owner__id=musician.user.id)
+    now = datetime.date.today()
     # We will only have one primary instrument
+ # I need to collect every group that I have an event that has passed for which I have accepted for
+    contracts = Contract.objects.filter(musician__id = musician.id, accepted=True)
+    contract_ids = [contract.contract_id for contract in contracts]
+    # performed is past tense so occurring must be in the past
+    events = Event.objects.filter(contract__contract_id__in=contract_ids, occurring__lt=now)
+    event_ids = [event.id for event in events]
+    groups = Group.objects.filter(contract__event_id__in=event_ids)
    
     # The complement of the set containing exclusively primary instrument
     instruments = InstrumentSkill.objects.filter(owner=musician.user)
@@ -1281,7 +1290,7 @@ def viewMusician(request, pk):
     except:
         contractable = False
     
-    context = {'musician': musician, 'contractable': contractable, 'instruments': instruments,'genres': genres, 'demos': demos, 'unread_count': unread_messages.count()}
+    context = {'musician': musician, 'contractable': contractable, 'instruments': instruments,'genres': genres, 'demos': demos, 'unread_count': unread_messages.count(), 'groups': groups, 'eventsPerformed': events}
     return render(request, 'base/musician.html', context)
 
 @login_required(login_url="login")

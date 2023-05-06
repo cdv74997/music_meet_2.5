@@ -42,14 +42,23 @@
             </a>
             {% endif %}
           </div>
+          {% if eventsPerformed %}
+          {% if eventsPerformed.count == 1 %}
+          <h2>{{eventsPerformed.count}}  Event Performed At</h2>
+          {% else %}
+          <h2>Events Performed At: {{eventsPerformed.count}}</h2>
+          {% endif %}
+          {% endif %}
+          
           {% if groups %}
-          <h3>Groups Performed With</h3>
-          <br>
+          <h2>Groups Performed With:</h2>
+          
           {% for group in groups %}
           <h4>{{group.group_name}}</h4>
-          <br>
+          
           {% endfor %}
           {% endif %}
+          
           <ul class="instruments">
             <h3>Instruments</h3>
             {% if instruments %}

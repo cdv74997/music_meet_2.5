@@ -13,7 +13,7 @@
             <p>Ending time: {{contract.end_time}}</p>
             <p>Pay: ${{contract.pay}} per hour</p>
             <br>
-            <p>Date Of Event: {{contract.event.occurring}}</p>
+            <p>Date Of Event: {{contract.event.occurring|date:"m/d/Y"}}</p>
             <p>Location: {{contract.location}}</p>
            <br>
            <a href="{% url 'home' %}">Return</a>
