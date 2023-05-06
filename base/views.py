@@ -356,16 +356,18 @@ def groupEventSearch(request, pk):
     messages = Message.objects.filter(user=group.user).order_by("created")
     now = datetime.date.today()
     topics = Topic.objects.all()[0:5]
+    allevents = 0
     for topic in topics:
-        event_count = topic.event_set.filter(occurring__gte=now, booked=False).count()
-        topic.eventfor = event_count
+        eventcount = topic.event_set.filter(occurring__gte=now, booked=False).count()
+        topic.eventfor = eventcount
+        allevents += eventcount
     custom_range, eventsG, paginator = paginateEvents(request, eventsG, 8)
     message_dict = {}
     groupeventsearching = "yes"
     for event in eventsG:
         message_dict[event] = len(messages.filter(event__id=event.id))
     context = {'eventsG': eventsG, 'eventsG_count': eventsG_count,'messages': messages, 'message_dict': message_dict, 'topics': topics, 'custom_range': custom_range, 'unread_count': unread_messages.count(),
-    'paginator': paginator, 'group': group, 'groupeventsearching': groupeventsearching}
+    'paginator': paginator, 'group': group, 'groupeventsearching': groupeventsearching, 'alleventscount': allevents}
     
 
     return render(request, 'base/home.html', context)
@@ -380,16 +382,18 @@ def home(request):
     unread_messages = InboxMessage.objects.filter(recipient=request.user, is_read=False)
     eventsearching = "yes"
     topics = Topic.objects.all()[0:5]
+    allevents = 0
     for topic in topics:
-        event_count = topic.event_set.filter(occurring__gte=now, booked=False).count()
-        topic.eventfor = event_count
+        eventcount = topic.event_set.filter(occurring__gte=now, booked=False).count()
+        topic.eventfor = eventcount
+        allevents += eventcount
     
     
     
     # Create an object containing the groups object, musicians object, etc.:
     context = {'events': events, 'topics': topics, 'unread_count': unread_messages.count(),
      'event_count': event_count, 'event_messages': event_messages, 'message_dict': message_dict,
-     'q': q, 'paginator': paginator, 'custom_range': custom_range, 'eventsearching': eventsearching, 'now': now, 'distance': distance,'distanceChoices': distanceChoices, 'topics': topics}
+     'q': q, 'paginator': paginator, 'custom_range': custom_range, 'eventsearching': eventsearching, 'now': now, 'distance': distance,'distanceChoices': distanceChoices, 'topics': topics, 'alleventscount': allevents}
 
     # Load the base/home.html template, send the context object to the template, and output the HTML that is rendered by the template:
     return render(request, 'base/home.html', context)
@@ -822,10 +826,12 @@ def topicsPage(request):
     q = request.GET.get('q') if request.GET.get('q') != None else ''
     now = datetime.date.today()
     topics = Topic.objects.filter(name__icontains=q)
+    allevents = 0
     for topic in topics:
-        event_count = topic.event_set.filter(occurring__gte=now, booked=False).count()
-        topic.eventfor = event_count
-    return render(request, 'base/topics.html', {'topics' : topics, 'unread_count': unread_messages.count(), 'now': now})
+        eventcount = topic.event_set.filter(occurring__gte=now, booked=False).count()
+        topic.eventfor = eventcount
+        allevents += eventcount
+    return render(request, 'base/topics.html', {'topics' : topics, 'unread_count': unread_messages.count(), 'now': now, 'alleventscount': allevents})
 
 def activityPage(request):
     event_messages = Message.objects.all()
@@ -1058,7 +1064,7 @@ def createContract(request, pk):
     #    print(not reject)
     #    if not reject:
     #        events |= Event.objects.filter(id=id)
-    
+    sysUser = User.objects.get(username='MusicMeet')
     formC = ContractForm(user)
 
     
@@ -1084,7 +1090,7 @@ def createContract(request, pk):
             messagebody = "Hello, " + str(musician) + " you have a new contract offer from " + str(user.group) + ". Please respond fill out your response here. Thank you.\n" + "Sincerely,\n" + "The MusicMeet Team"
             messagebodyEmail = "Hello, " + str(musician) + " you have a new contract offer from " + str(user.group)  + ". Please respond by viewing the notification for this offer in your inbox in the app. Thank you.\n" + "Sincerely,\n" + "The MusicMeet Team"
             subject = "Music Meet Contract Offer. Offer ID: " + str(contract.contract_id)
-            sysUser = User.objects.get(username='MusicMeet')
+            
             groupmessageSubject = "Music Meet Offer Sent. Offer ID: " + str(contract.contract_id)
             groupmessagebody = "Hello, " + str(user) + " this message confirms that you have sent " + str(musician) + " a contract offer to perform as a " + str(contract.instrument) + " for the venue " + str(contract.event.name) + "\nPlease allow some time for a response. Thank you.\n" + "Sincerely,\n" + "The MusicMeet Team"
             groupmessagebodyemail = "Hello, " + str(user) + " this email confirms that you have sent " + str(musician) + " a contract offer to perform as a " + str(contract.instrument) + " for the venue " + str(contract.event.name) + "\nPlease allow some time for a response. Thank you.\n" + "Sincerely,\n" + "The MusicMeet Team"
