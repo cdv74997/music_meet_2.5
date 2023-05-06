@@ -434,10 +434,12 @@ def searchMusician(request):
     unread_messages = InboxMessage.objects.filter(recipient=request.user, is_read=False)
     now = datetime.date.today()
     topics = Topic.objects.all()[0:5]
+    allevents = 0
     for topic in topics:
-        event_count = topic.event_set.filter(occurring__gte=now, booked=False).count()
-        topic.eventfor = event_count
-    context = {'musicians': musicians, 'musicians_count': musicians_count, 'topics': topics, 'eventsearching': eventsearching, 'groupsearching': groupsearching, 'musiciansearching': musiciansearching, 'unread_count': unread_messages.count()}
+        eventcount = topic.event_set.filter(occurring__gte=now, booked=False).count()
+        topic.eventfor = eventcount
+        allevents += eventcount
+    context = {'musicians': musicians, 'musicians_count': musicians_count, 'topics': topics, 'eventsearching': eventsearching,'alleventscount': allevents,'groupsearching': groupsearching, 'musiciansearching': musiciansearching, 'unread_count': unread_messages.count()}
     return render(request, 'base/home.html', context)
 
 @login_required(login_url="login")
@@ -472,11 +474,13 @@ def searchGroup(request):
     unread_messages = InboxMessage.objects.filter(recipient=request.user, is_read=False)
     
     now = datetime.date.today()
+    allevents = 0
     topics = Topic.objects.all()[0:5]
     for topic in topics:
-        event_count = topic.event_set.filter(occurring__gte=now, booked=False).count()
-        topic.eventfor = event_count
-    context = {'topics': topics, 'eventsearching': eventsearching, 'groupsearching': groupsearching, 'groups': groups, 'groups_count': groups_count, 'unread_count': unread_messages.count()}
+        eventcount = topic.event_set.filter(occurring__gte=now, booked=False).count()
+        topic.eventfor = eventcount
+        allevents += eventcount
+    context = {'topics': topics, 'eventsearching': eventsearching, 'groupsearching': groupsearching, 'groups': groups, 'groups_count': groups_count, 'unread_count': unread_messages.count(), 'alleventscount': allevents}
     return render(request, 'base/home.html', context)
 
 @login_required(login_url="login")

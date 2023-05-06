@@ -130,7 +130,7 @@ def searchMusicians(request):
     return musicians
     #for userMusician in userMusicians:
 def searchEvents(request):
-    q = request.GET.get('q') if request.GET.get('q') != None else ''
+    #q = request.GET.get('q') if request.GET.get('q') != None else ''
     if (hasattr(request.user, 'musician')):
         filterDistanceParam = request.GET.get('distance')
         if filterDistanceParam:
@@ -143,7 +143,7 @@ def searchEvents(request):
         else:
             distance = 10000
         distance = request.session.get('distance_filter', 10000)
-    if (hasattr(request.user, 'musician') and (not q)):
+    if (hasattr(request.user, 'musician') and (request.GET.get('q') == None)):
         email = request.user.email
         musician = request.user.musician
         primarygenre = musician.primarygenre
@@ -165,11 +165,11 @@ def searchEvents(request):
             (Q(topic__name__icontains=primarygenre) |
             Q(description__icontains=primaryinstrument) |
             Q(instruments_needed__icontains=primaryinstrument)) &
-            (Q(occurring__gte=datetime.date.today()) & Q(musicians_needed__gte=1))
+            ((Q(occurring__gte=datetime.date.today())) & (Q(musicians_needed__gte=1)))
          )
         if genres:
             for genre in genres.iterator():
-               events |= Event.objects.filter(Q(topic__name__icontains=genre) & (Q(occurring__gte=datetime.date.today()) & Q(musicians_needed__gte=1)))
+               events |= Event.objects.filter(Q(topic__name__icontains=genre) & ((Q(occurring__gte=datetime.date.today())) & (Q(musicians_needed__gte=1))))
                
 
         if instruments:
@@ -177,11 +177,11 @@ def searchEvents(request):
                 events |= Event.objects.filter(
                     (Q(description__icontains=instrument) |
                     Q(instruments_needed__icontains=instrument)) &
-                    Q(occurring__gte=datetime.date.today())
+                    ((Q(occurring__gte=datetime.date.today()) & (Q(musicians_needed__gte=1))))
                 )
         if instruments != "":
             for instrument in instruments.iterator():
-                events |= Event.objects.filter((Q(description__icontains=instrument) | Q(instruments_needed__icontains=instrument)) & (Q(occurring__gte=datetime.date.today()) & Q(musicians_needed__gte=1)))
+                events |= Event.objects.filter((Q(description__icontains=instrument) | Q(instruments_needed__icontains=instrument)) & (Q(occurring__gte=datetime.date.today())) & (Q(musicians_needed__gte=1)))
         
       
 
@@ -266,7 +266,7 @@ def searchEvents(request):
         events = Event.objects.filter(
             (Q(topic__name__icontains=q) |
             Q(name__icontains=q) |
-            Q(description__icontains=q)) & (Q(musicians_needed__gte=1) & Q(occurring__gte=datetime.date.today()))
+            Q(description__icontains=q) | Q(instruments_needed=q)) & ((Q(musicians_needed__gte=1)) & (Q(occurring__gte=datetime.date.today())))
         )
         event_messages = Message.objects.filter(Q(event__topic__name__icontains=q))
         now = datetime.date.today()
