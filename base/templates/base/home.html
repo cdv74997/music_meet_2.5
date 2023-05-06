@@ -72,10 +72,10 @@
               
               <h2>Events</h2>
               {% if not q %} <!-- If the user didn't make a search query, print number of events -->
-                {% if events|length == 1 %}
-                <p>{{events|length}} event available</p>
+                {% if event_count == 1 %}
+                <p>{{event_count}} event available</p>
                 {% else %}
-                <p>{{events|length}} events available</p>
+                <p>{{event_count}} events available</p>
                 {% endif %}
 
               {% else %} <!-- Otherwise, tell them how many results there were for their query -->
